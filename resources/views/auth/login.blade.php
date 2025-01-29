@@ -33,15 +33,15 @@
                     <form action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email адрес</label>
+                            <label for="username" class="form-label">Имя пользователя</label>
                             <input
-                                type="email"
-                                name="email"
-                                id="email"
+                                type="text"
+                                name="username"
+                                id="username"
                                 class="form-control"
                                 required
-                                value="{{ old('email') }}"
-                                placeholder="Введите email">
+                                value="{{ old('username') }}"
+                                placeholder="Введите имя пользователя">
                         </div>
 
                         <div class="mb-3">

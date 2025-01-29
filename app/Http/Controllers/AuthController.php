@@ -16,7 +16,14 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required',
-            'password' => '<PASSWORD>',
+            'password' => [
+                'required',
+                'string',
+                'min:8',          // Минимум 8 символов
+                'max:20',         // Максимум 20 символов
+                \Illuminate\Validation\Rules\Password::defaults(),
+            ],
+
         ]);
 
         if (Auth::attempt($request->only('username', 'password'))) {
