@@ -42,6 +42,18 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function hasRole(string $role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+
+
     /**
      * Get the attributes that should be cast.
      *
