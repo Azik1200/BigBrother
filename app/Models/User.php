@@ -19,9 +19,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
+        'username',
         'email',
+        'phone',
         'password',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -32,6 +36,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class);
+    }
 
     /**
      * Get the attributes that should be cast.
