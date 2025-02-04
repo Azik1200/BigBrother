@@ -20,6 +20,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/groups/{group}', [GroupController::class, 'show'])->name('group.show');
         Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
         Route::put('/groups/{group}', [GroupController::class, 'update'])->name('group.update');
+        Route::put('/groups/{group}', [GroupController::class, 'delete'])->name('group.delete');
+        Route::get('/groups/{group}/add-members', [GroupController::class, 'addMembersForm'])->name('group.add_members');
+        Route::post('/groups/{group}/add-members', [GroupController::class, 'addMembers'])->name('group.store_members');
+        Route::delete('/groups/{group}/members/{user}', [GroupController::class, 'removeMember'])->name('group.remove_member');
+
     });
 
 

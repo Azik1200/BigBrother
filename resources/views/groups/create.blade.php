@@ -14,5 +14,8 @@
 
             <button type="submit" class="btn btn-success">Создать</button>
         </form>
+        <a href="{{ route('group') }}" class="btn btn-secondary mt-4">
+            <i class="bi bi-arrow-left-circle me-2"></i>Назад к списку групп
+        </a>
     </div>
 @endsection

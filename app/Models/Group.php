@@ -12,7 +12,8 @@ class Group extends Model
 
     protected $fillable = [
         'name',
-        'user_id'
+        'deleted_at',
+        'deleted_by'
     ];
 
     public function users()
@@ -23,6 +24,11 @@ class Group extends Model
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'group_user', 'group_id', 'user_id');
     }
 
 }
