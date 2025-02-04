@@ -9,8 +9,17 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Task::all();
-        return view('tasks.index', compact('tasks'));
+        $user = auth()->user();
+        $groups = $user->groups;
+
+        $assignedTasks = $user->assignedTasks;
+        $createdTasks = Task::where('user_id', $user->id)->get();
+        $groupIds = $groups->pluck('id'); // ID групп пользователя
+        $unassignedTasks = Task::whereIn('group_id', $groupIds)
+            ->whereDoesntHave('assignees') // Если нет исполнителей
+            ->get();
+
+        return view('tasks.index', compact('assignedTasks', 'createdTasks', 'unassignedTasks'));
     }
 
     public function create()
