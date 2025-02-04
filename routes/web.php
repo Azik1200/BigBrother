@@ -13,20 +13,27 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
-        Route::get('/groups', [GroupController::class, 'index'])->name('group');
-        Route::get('/groups/create', [GroupController::class, 'create'])->name('group.create');
-        Route::post('/groups', [GroupController::class, 'store'])->name('group.store');
-        Route::get('/groups/{group}', [GroupController::class, 'show'])->name('group.show');
-        Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
-        Route::put('/groups/{group}', [GroupController::class, 'update'])->name('group.update');
-        Route::put('/groups/{group}', [GroupController::class, 'delete'])->name('group.delete');
-        Route::get('/groups/{group}/add-members', [GroupController::class, 'addMembersForm'])->name('group.add_members');
-        Route::post('/groups/{group}/add-members', [GroupController::class, 'addMembers'])->name('group.store_members');
-        Route::delete('/groups/{group}/members/{user}', [GroupController::class, 'removeMember'])->name('group.remove_member');
+    Route::prefix('groups')->group(function () {
+        Route::get('/list', [GroupController::class, 'myGroups'])->name('group.list');
 
+        Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
+            Route::get('/', [GroupController::class, 'index'])->name('group');
+            Route::get('/create', [GroupController::class, 'create'])->name('group.create');
+            Route::post('/', [GroupController::class, 'store'])->name('group.store');
+
+            Route::prefix('/{group}')->group(function () {
+                Route::get('/', [GroupController::class, 'show'])->name('group.show');
+                Route::get('/edit', [GroupController::class, 'edit'])->name('group.edit');
+                Route::put('/', [GroupController::class, 'update'])->name('group.update');
+                Route::put('/', [GroupController::class, 'delete'])->name('group.delete');
+                Route::get('/add-members', [GroupController::class, 'addMembersForm'])->name('group.add_members');
+                Route::post('/add-members', [GroupController::class, 'addMembers'])->name('group.store_members');
+                Route::delete('/members/{user}', [GroupController::class, 'removeMember'])->name('group.remove_member');
+            });
+
+        });
+        Route::get('/group/list', [GroupController::class, 'myGroups'])->name('group.my');
     });
-
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks');
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');

@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('groups') ? 'active' : '' }}" href="#">
+                    <a class="nav-link {{ request()->routeIs('groups.list') ? 'active' : '' }}" href="{{ route('group.list') }}">
                         Группы
                     </a>
                 </li>

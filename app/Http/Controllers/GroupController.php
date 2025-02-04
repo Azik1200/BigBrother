@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
@@ -59,7 +60,7 @@ class GroupController extends Controller
     public function addMembersForm(Group $group)
     {
         $users = User::whereDoesntHave('groups', function ($query) use ($group) {
-            $query->where('groups.id', $group->id); // Ищем пользователей, которые ещё не в этой группе
+            $query->where('groups.id', $group->id);
         })->get();
 
         return view('groups.add_members', compact('group', 'users'));
@@ -68,8 +69,8 @@ class GroupController extends Controller
     public function addMembers(Request $request, Group $group)
     {
         $request->validate([
-            'user_ids' => 'required|array',   // Убедиться, что передан массив пользователей
-            'user_ids.*' => 'exists:users,id' // Валидируем что ID пользователей существуют
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
         ]);
 
         $group->members()->attach($request->user_ids);
@@ -86,5 +87,14 @@ class GroupController extends Controller
         return redirect()->route('group.show', $group->id)
             ->with('success', 'Участник успешно удалён из группы!');
     }
+
+    public function myGroups()
+    {
+        $user = Auth::user();
+        $groups = $user->groups;
+
+        return view('groups.my_group', compact('groups'));
+    }
+
 }
 
