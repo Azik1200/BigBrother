@@ -14,9 +14,9 @@ class TaskController extends Controller
 
         $assignedTasks = $user->assignedTasks;
         $createdTasks = Task::where('user_id', $user->id)->get();
-        $groupIds = $groups->pluck('id'); // ID групп пользователя
+        $groupIds = $groups->pluck('id');
         $unassignedTasks = Task::whereIn('group_id', $groupIds)
-            ->whereDoesntHave('assignees') // Если нет исполнителей
+            ->whereDoesntHave('assignees')
             ->get();
 
         return view('tasks.index', compact('assignedTasks', 'createdTasks', 'unassignedTasks'));
@@ -34,7 +34,7 @@ class TaskController extends Controller
             'description'=> 'nullable|min:3|max:1000',
         ]);
 
-        Task::create($request->only('name', 'description'));
+        Task::create($request->only('name', 'description', 'group_id', 'user_id')); //TODO Доработать форму
 
         return redirect()->route('tasks.index')->with('success', 'Nice');
     }
