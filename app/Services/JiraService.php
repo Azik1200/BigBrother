@@ -11,9 +11,9 @@ class JiraService
 
     public function __construct()
     {
-        $email = 'your_email@example.com'; // Замените на ваш Email
-        $apiToken = 'your_api_token'; // Замените на ваш API-токен
-        $this->baseUri = 'https://your-domain.atlassian.net/rest/api/3/'; // Базовый URL API Jira
+        $email = 'your_email@example.com';
+        $apiToken = env('JIRA_TOKEN');
+        $this->baseUri = 'https://your-domain.atlassian.net/rest/api/3/';
         $this->authHeader = "Basic " . base64_encode("$email:$apiToken");
     }
 
