@@ -31,8 +31,30 @@
                         Профиль
                     </a>
                 </li>
+
+                <!-- Проверка условий: доп пункты меню -->
+                @if (
+
+                    auth()->user()->groups->contains('name', 'ON') ||
+                    auth()->user()->roles->pluck('name')->contains('director') ||
+                    auth()->user()->roles->pluck('name')->contains('deputy director') ||
+                    auth()->user()->roles->pluck('name')->contains('admin')
+
+                )
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('followup') ? 'active' : '' }}" href="{{ route('followup') }}">
+                            FollowUp
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('jira') ? 'active' : '' }}" href="{}">
+                            Jira
+                        </a>
+                    </li>
+                @endif
             </ul>
 
+            <!-- Кнопка выхода -->
             <form class="d-flex" action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="btn btn-outline-light" type="submit">

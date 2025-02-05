@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FollowUpController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\TaskController;
 use App\Http\Middleware\RoleMiddleware;
@@ -32,7 +34,13 @@ Route::middleware(['auth'])->group(function () {
             });
 
         });
-        Route::get('/group/list', [GroupController::class, 'myGroups'])->name('group.my');
+    });
+
+    Route::prefix('admin')->group(function () {
+        Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
+            Route::get('/', [AdminController::class, 'index'])->name('admin');
+            Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
+        });
     });
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks');

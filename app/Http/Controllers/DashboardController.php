@@ -12,6 +12,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        $roles = $user->roles;
         $groups = $user->groups;
 
         $assignedTasks = $user->assignedTasks;
@@ -23,7 +24,7 @@ class DashboardController extends Controller
             ->whereDoesntHave('assignees') // Если нет исполнителей
             ->get();
 
-        return view('dashboard.index', compact('user', 'groups', 'assignedTasks', 'createdTasks', 'groupTasksNoAssignee'));
+        return view('dashboard.index', compact('user', 'groups', 'assignedTasks', 'createdTasks', 'groupTasksNoAssignee','roles'));
     }
 
 }
