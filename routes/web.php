@@ -39,7 +39,13 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
             Route::get('/', [AdminController::class, 'index'])->name('admin');
+
             Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
+
+            Route::prefix('/users')->group(function () {
+                Route::get('/', [AdminController::class, 'users'])->name('admin.users');
+                Route::get('/{id}', [AdminController::class, 'user'])->name('admin.user.show');
+            });
         });
     });
 

@@ -27,7 +27,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Управление пользователями</h5>
                         <p class="card-text">Просмотр, редактирование и управление пользователями.</p>
-                        <a href="#" class="btn btn-light">Перейти</a>
+                        <a href="{{ route('admin.users') }}" class="btn btn-light">Перейти</a>
                     </div>
                 </div>
             </div>
