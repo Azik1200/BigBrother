@@ -42,9 +42,13 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
 
+
             Route::prefix('/users')->group(function () {
                 Route::get('/', [AdminController::class, 'users'])->name('admin.users');
-                Route::get('/{id}', [AdminController::class, 'user'])->name('admin.user.show');
+                Route::get('/create/new', [AdminController::class, 'usersCreate'])->name('admin.user.create');
+                Route::get('/{user}', [AdminController::class, 'userShow'])->name('admin.user.show'); //TODO нужно дорабоать есть ошибка
+
+                Route::post('/', [AdminController::class, 'usersStore'])->name('admin.user.store');
             });
         });
     });

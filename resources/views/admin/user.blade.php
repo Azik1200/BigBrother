@@ -15,7 +15,19 @@
                 <p><strong>ID:</strong> {{ $user->id }}</p>
                 <p><strong>Имя:</strong> {{ $user->name }}</p>
                 <p><strong>Email:</strong> {{ $user->email }}</p>
-                <p><strong>Роль:</strong> {{ $user->role ?? 'Пользователь' }}</p>
+                <p><strong>Роль:</strong> @forelse ($user->roles as $role)
+                        <span class=>{{ $role->name }}</span>
+                    @empty
+                        <span class="text-muted">Роль не назначена</span>
+                    @endforelse
+                </p>
+                <p><strong>Группы:</strong>
+                    @forelse ($user->groups as $group)
+                        <span>{{ $group->name }}</span>
+                    @empty
+                        <span class="text-muted">Группы не назначены</span>
+                    @endforelse
+                </p>
             </div>
         </div>
 

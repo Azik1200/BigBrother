@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -19,11 +21,47 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
-    public function showUser($id) {
-        $user = User::findOrFail($id);
-
+    public function userShow(User $user) {
         $groups = $user->groups;
+        $roles = $user->roles;
 
-        return view('admin.user', compact('user', 'groups'));
+        return view('admin.user', compact('user', 'groups', 'roles'));
+    }
+
+    public function usersCreate() {
+        $roles = Role::all();
+        $groups = Group::all();
+
+        return view('admin.users_create', compact('roles', 'groups'));
+    }
+
+    public function usersStore(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255', // Валидация для фамилии
+            'username' => 'required|string|max:255|unique:users,username', // Валидация для username
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|regex:/^\+?[0-9]{10,15}$/', // Валидация для телефона
+            'password' => 'required|string|min:6|confirmed',
+            'roles' => 'required|array',
+            'groups' => 'nullable|array',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'surname' => $validated['last_name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        $user->roles()->attach($validated['roles']);
+
+        if (!empty($validated['groups'])) {
+            $user->groups()->attach($validated['groups']);
+        }
+
+        return redirect()->route('admin.users')->with('success', 'Пользователь успешно добавлен!');
     }
 }

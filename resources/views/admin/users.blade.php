@@ -7,7 +7,7 @@
         <h1 class="mb-4">Управление пользователями</h1>
 
         <!-- Кнопка "Добавить пользователя" -->
-        <a href="#" class="btn btn-success mb-3">Добавить пользователя</a>
+        <a href="{{ route('admin.user.create') }}" class="btn btn-success mb-3">Добавить пользователя</a>
         <a href="{{ route('admin') }}" class="btn btn-secondary mb-3">Вернуться на админ панель</a>
 
         <!-- Таблица пользователей -->
