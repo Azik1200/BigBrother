@@ -129,6 +129,45 @@
                                 @enderror
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Назначить на пользователей</label>
+                                <div>
+                                    @foreach($users as $user)
+                                        <div class="form-check">
+                                            <input
+                                                type="checkbox"
+                                                name="assigned_users[]"
+                                                id="user_{{ $user->id }}"
+                                                value="{{ $user->id }}"
+                                                class="form-check-input">
+                                            <label for="user_{{ $user->id }}" class="form-check-label">
+                                                {{ $user->name }} ({{ $user->email }})
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @error('assigned_users')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Загрузка файлов -->
+                            <div class="mb-4">
+                                <label for="files" class="form-label fw-semibold">Загрузить файлы</label>
+                                <input
+                                    type="file"
+                                    name="files[]"
+                                    id="files"
+                                    class="form-control @error('files') is-invalid @enderror"
+                                    multiple>
+                                @error('files')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+
                             <!-- Кнопки действий -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{ route('tasks') }}" class="btn btn-outline-secondary">

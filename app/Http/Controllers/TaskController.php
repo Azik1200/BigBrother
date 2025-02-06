@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -26,7 +27,9 @@ class TaskController extends Controller
     public function create()
     {
         $groups = auth()->user()->groups;
-        return view('tasks.create', compact('groups'));
+        $users = User::all();
+
+        return view('tasks.create', compact('groups', 'users'));
     }
 
     public function store(Request $request)
@@ -38,9 +41,11 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:pending,in_progress,completed',
             'due_date' => 'required|date|after:today',
+            'assigned_users' => 'nullable|array',
+            'assigned_users.*' => 'exists:users,id',
         ]);
 
-        Task::create([
+        $task = Task::create([
             'name' => $request->name,
             'description' => $request->description,
             'group_id' => $request->group_id,
@@ -50,7 +55,21 @@ class TaskController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return redirect()->route('tasks.index')->with('success', 'Задача успешно создана.');
+        if ($request->has('assigned_users')) {
+            $task->users()->attach($request->assigned_users);
+        }
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $filePath = $file->store('tasks/files', 'public');
+                $task->files()->create([
+                    'path' => $filePath,
+                    'name' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
+
+        return redirect()->route('tasks')->with('success', 'Задача успешно создана.');
     }
 
     public function show(Task $task)

@@ -10,10 +10,15 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
+        'name',
         'description',
         'creator_id',
         'group_id',
+        'priority',
+        'status',
+        'due_date',
+        'assigned_users',
+        'user_id'
     ];
 
     public function creator()
@@ -29,5 +34,15 @@ class Task extends Model
     public function group()
     {
         return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'task_user');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
     }
 }

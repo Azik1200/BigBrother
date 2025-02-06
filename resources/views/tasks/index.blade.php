@@ -22,7 +22,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="bi bi-clock me-1"></i> Назначено: {{ $task->created_at->format('d.m.Y H:i') }} |
-                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->deadline->format('d.m.Y') }}
+                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->due_date }}
                                 </small>
                                 <div>
                                     <a href="{{ route('tasks.show', $task) }}" class="btn btn-outline-info btn-sm me-2">
@@ -59,7 +59,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="bi bi-clock me-1"></i> Назначено: {{ $task->created_at->format('d.m.Y H:i') }} |
-                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->deadline->format('d.m.Y') }}
+                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->due_date }}
                                 </small>
                                 <div>
                                     <a href="{{ route('tasks.show', $task) }}" class="btn btn-outline-info btn-sm me-2">
@@ -96,7 +96,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="bi bi-clock me-1"></i> Назначено: {{ $task->created_at->format('d.m.Y H:i') }} |
-                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->deadline->format('d.m.Y') }}
+                                    <i class="bi bi-calendar-event me-1"></i> Дедлайн: {{ $task->due_date }}
                                 </small>
                                 <div>
                                     <a href="{{ route('tasks.show', $task) }}" class="btn btn-outline-info btn-sm me-2">
