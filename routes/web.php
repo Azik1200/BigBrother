@@ -7,6 +7,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\FollowUpController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProcedureController;
+use App\Http\Controllers\ScriptController;
 use App\Http\Controllers\TaskController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('/procedures')->group(function () {
         Route::get('/', [ProcedureController::class, 'index'])->name('procedures');
         Route::post('/', [ProcedureController::class, 'store'])->name('procedures.store');
+    });
+
+    Route::prefix('/script')->group(function () {
+        Route::get('/', [ScriptController::class, 'index'])->name('script');
+        Route::post('/', [ScriptController::class, 'store'])->name('script.store');
     });
 
 

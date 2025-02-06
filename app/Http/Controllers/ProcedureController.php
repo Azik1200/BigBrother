@@ -22,7 +22,7 @@ class ProcedureController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'file' => 'required',
-            'group_id' => 'required|exists:groups,id', // Убедимся, что group_id передаётся и существует
+            'group_id' => 'required|exists:groups,id',
         ]);
 
         $fileController = new FileController();
