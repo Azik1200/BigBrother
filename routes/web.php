@@ -3,8 +3,10 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\FollowUpController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\TaskController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +17,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    Route::prefix('/procedures')->group(function () {
+        Route::get('/', [ProcedureController::class, 'index'])->name('procedures');
+        Route::post('/', [ProcedureController::class, 'store'])->name('procedures.store');
+    });
+
+
     Route::prefix('groups')->group(function () {
         Route::get('/list', [GroupController::class, 'myGroups'])->name('group.list');
 
@@ -22,6 +30,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [GroupController::class, 'index'])->name('group');
             Route::get('/create', [GroupController::class, 'create'])->name('group.create');
             Route::post('/', [GroupController::class, 'store'])->name('group.store');
+
+            Route::prefix('/files')->group(function () {
+                Route::post('/upload', [FileController::class, 'upload'])->name('files.upload');
+                Route::delete('/delete', [FileController::class, 'delete'])->name('files.delete');
+            });
+
 
             Route::prefix('/{group}')->group(function () {
                 Route::get('/', [GroupController::class, 'show'])->name('group.show');
