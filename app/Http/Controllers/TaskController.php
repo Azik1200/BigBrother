@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -24,19 +25,32 @@ class TaskController extends Controller
 
     public function create()
     {
-        return view('tasks.create');
+        $groups = auth()->user()->groups;
+        return view('tasks.create', compact('groups'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name'=> 'required|min:3|max:255',
-            'description'=> 'nullable|min:3|max:1000',
+            'name' => 'required|min:3|max:255',
+            'description' => 'nullable|min:3|max:1000',
+            'group_id' => 'required|exists:groups,id',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:pending,in_progress,completed',
+            'due_date' => 'required|date|after:today',
         ]);
 
-        Task::create($request->only('name', 'description', 'group_id', 'user_id')); //TODO Доработать форму
+        Task::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'group_id' => $request->group_id,
+            'priority' => $request->priority,
+            'status' => $request->status,
+            'due_date' => $request->due_date,
+            'user_id' => auth()->id(),
+        ]);
 
-        return redirect()->route('tasks.index')->with('success', 'Nice');
+        return redirect()->route('tasks.index')->with('success', 'Задача успешно создана.');
     }
 
     public function show(Task $task)
