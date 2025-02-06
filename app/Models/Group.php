@@ -13,7 +13,8 @@ class Group extends Model
     protected $fillable = [
         'name',
         'deleted_at',
-        'deleted_by'
+        'deleted_by',
+        'user_id'
     ];
 
     public function users()

@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('groups.list') ? 'active' : '' }}" href="{{ route('group.list') }}">
+                    <a class="nav-link {{ request()->routeIs('group.list') ? 'active' : '' }}" href="{{ route('group.list') }}">
                         Группы
                     </a>
                 </li>
@@ -37,7 +37,6 @@
 
                     auth()->user()->groups->contains('name', 'ON') ||
                     auth()->user()->roles->pluck('name')->contains('director') ||
-                    auth()->user()->roles->pluck('name')->contains('deputy director') ||
                     auth()->user()->roles->pluck('name')->contains('admin')
 
                 )
@@ -55,12 +54,21 @@
             </ul>
 
             <!-- Кнопка выхода -->
-            <form class="d-flex" action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="btn btn-outline-light" type="submit">
-                    <i class="bi bi-box-arrow-right"></i> Выйти
-                </button>
-            </form>
+            <div class="d-flex align-items-center gap-2">
+                @if(auth()->user() && auth()->user()->roles->pluck('name')->contains('admin', 'director'))
+                    <a href="{{ route('admin') }}" class="btn btn-outline-light">
+                        <i class="bi bi-tools"></i> Админ панель
+                    </a>
+                @endif
+
+                <form action="{{ route('logout') }}" method="POST" class="mb-0">
+                    @csrf
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-box-arrow-right"></i> Выйти
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </nav>

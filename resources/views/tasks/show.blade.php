@@ -1,30 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h1 class="text-xl font-bold mb-4">{{ $task->title }}</h1>
-
-        <div class="mb-4">
-            <p class="text-gray-700 font-medium">Описание:</p>
-            <p>{{ $task->description }}</p>
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="fw-bold">{{ $task->title }}</h1>
+            <div>
+                <a href="{{ route('tasks') }}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Назад
+                </a>
+                <a href="{{ route('tasks.edit', $task) }}" class="btn btn-outline-warning">
+                    <i class="bi bi-pencil"></i> Редактировать
+                </a>
+            </div>
         </div>
 
-        <div class="mb-4">
-            <p class="text-gray-700 font-medium">Статус:</p>
-            <p class="{{ $task->is_completed ? 'text-green-600' : 'text-red-600' }}">
-                {{ $task->is_completed ? 'Завершена' : 'В процессе' }}
-            </p>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold text-primary mb-3">Описание</h5>
+                <p class="text-muted mb-0">{{ $task->description }}</p>
+            </div>
         </div>
 
-        <a
-            href="{{ route('tasks.index') }}"
-            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-            Назад
-        </a>
-        <a
-            href="{{ route('tasks.edit', $task) }}"
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Редактировать
-        </a>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary mb-3">Статус</h5>
+                        <p class="{{ $task->is_completed ? 'text-success' : 'text-danger' }}">
+                            {{ $task->is_completed ? 'Завершена' : 'В процессе' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary mb-3">Даты</h5>
+                        <p class="text-muted mb-0"><i class="bi bi-clock me-2"></i>Создано: {{ $task->created_at->format('d.m.Y H:i') }}</p>
+                        <p class="text-muted mb-0"><i class="bi bi-calendar-event me-2"></i>Дедлайн: {{ $task->due_date }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

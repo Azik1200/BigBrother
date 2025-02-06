@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -77,13 +78,11 @@ class TaskController extends Controller
         return view('tasks.show', compact('task'));
     }
 
-    // Форма редактирования задачи
     public function edit(Task $task)
     {
         return view('tasks.edit', compact('task'));
     }
 
-    // Обновить задачу
     public function update(Request $request, Task $task)
     {
         $request->validate([
@@ -96,12 +95,36 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Задача успешно обновлена!');
     }
 
-    // Удалить задачу
     public function destroy(Task $task)
     {
         $task->delete();
 
         return redirect()->route('tasks.index')->with('success', 'Задача успешно удалена!');
+    }
+
+    public function assignToMe(Task $task)
+    {
+        $user = Auth::user();
+
+        if (!$task->assignees->contains($user->id)) {
+            $task->assignees()->attach($user->id);
+            return redirect()->back()->with('success', 'Задача успешно назначена на вас.');
+        }
+
+        return redirect()->back()->with('warning', 'Задача уже назначена на вас.');
+    }
+
+    public function unassignFromMe(Task $task)
+    {
+        $user = Auth::user();
+
+        // Проверяем, назначена ли задача на пользователя
+        if ($task->assignees->contains($user->id)) {
+            $task->assignees()->detach($user->id); // Убираем назначение
+            return redirect()->back()->with('success', 'Вы сняли задачу с себя.');
+        }
+
+        return redirect()->back()->with('warning', 'Вы не назначены на эту задачу.');
     }
 
 }

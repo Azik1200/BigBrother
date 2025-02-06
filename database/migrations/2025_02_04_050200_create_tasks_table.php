@@ -21,7 +21,6 @@ return new class extends Migration
             $table->dateTime('due_date')->nullable();
             $table->string('file_path')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('group_id')->constrained()->onDelete('cascade');
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamps();
