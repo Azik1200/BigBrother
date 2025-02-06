@@ -66,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('/users')->group(function () {
                 Route::get('/', [AdminController::class, 'users'])->name('admin.users');
                 Route::get('/create/new', [AdminController::class, 'usersCreate'])->name('admin.user.create');
+                Route::get('/{user}/edit', [AdminController::class, 'usersEdit'])->name('admin.user.edit');
+                Route::put('/{user}', [AdminController::class, 'usersUpdate'])->name('admin.user.update');
                 Route::get('/{user}', [AdminController::class, 'userShow'])->name('admin.user.show'); //TODO нужно дорабоать есть ошибка
 
                 Route::post('/', [AdminController::class, 'usersStore'])->name('admin.user.store');

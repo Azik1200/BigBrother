@@ -43,7 +43,7 @@
                         @endforeach
                     </td>
                     <td>
-                        <a href="#" class="btn btn-sm btn-primary">Редактировать</a>
+                        <a href="{{ route('admin.user.edit', $user->id) }}" class="btn btn-sm btn-primary">Редактировать</a>
                         <form action="#" method="POST" style="display: inline-block;">
                             @csrf
                             @method('DELETE')
