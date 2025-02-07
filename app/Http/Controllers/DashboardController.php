@@ -20,8 +20,10 @@ class DashboardController extends Controller
 
         $createdTasks = Task::where('user_id', $user->id)->get();
 
-        $groupIds = $groups->pluck('id'); // ID групп пользователя
-        $groupTasksNoAssignee = Task::whereIn('group_id', $groupIds)
+        $groupIds = $groups->pluck('id');
+        $groupTasksNoAssignee = Task::whereHas('groups', function ($query) use ($groupIds) {
+            $query->whereIn('groups.id', $groupIds);
+        })
             ->whereDoesntHave('assignees') // Если нет исполнителей
             ->get();
 

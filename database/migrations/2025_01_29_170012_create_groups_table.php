@@ -12,6 +12,7 @@ class CreateGroupsTable extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->integer('group_leader')->default(1);
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamps();

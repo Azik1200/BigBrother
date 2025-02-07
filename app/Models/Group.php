@@ -14,6 +14,7 @@ class Group extends Model
         'name',
         'deleted_at',
         'deleted_by',
+        'group_leader',
         'user_id'
     ];
 
@@ -31,5 +32,11 @@ class Group extends Model
     {
         return $this->belongsToMany(User::class, 'group_user', 'group_id', 'user_id');
     }
+
+    public function tasksMany()
+    {
+        return $this->belongsToMany(Task::class, 'group_task', 'group_id', 'task_id');
+    }
+
 
 }

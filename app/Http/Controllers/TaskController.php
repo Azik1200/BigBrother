@@ -18,7 +18,10 @@ class TaskController extends Controller
         $assignedTasks = $user->assignedTasks;
         $createdTasks = Task::where('user_id', $user->id)->get();
         $groupIds = $groups->pluck('id');
-        $unassignedTasks = Task::whereIn('group_id', $groupIds)
+
+        $unassignedTasks = Task::whereHas('groups', function ($query) use ($groupIds) {
+            $query->whereIn('groups.id', $groupIds);
+        })
             ->whereDoesntHave('assignees')
             ->get();
 
@@ -38,7 +41,8 @@ class TaskController extends Controller
         $request->validate([
             'name' => 'required|min:3|max:255',
             'description' => 'nullable|min:3|max:1000',
-            'group_id' => 'required|exists:groups,id',
+            'group_ids' => 'required|array', // Теперь ожидаем массив групп
+            'group_ids.*' => 'exists:groups,id', // Проверяем валидность каждой группы
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:pending,in_progress,completed',
             'due_date' => 'required|date|after:today',
@@ -49,12 +53,13 @@ class TaskController extends Controller
         $task = Task::create([
             'name' => $request->name,
             'description' => $request->description,
-            'group_id' => $request->group_id,
             'priority' => $request->priority,
             'status' => $request->status,
             'due_date' => $request->due_date,
             'user_id' => auth()->id(),
         ]);
+
+        $task->groups()->attach($request->group_ids);
 
         if ($request->has('assigned_users')) {
             $task->users()->attach($request->assigned_users);
@@ -118,9 +123,8 @@ class TaskController extends Controller
     {
         $user = Auth::user();
 
-        // Проверяем, назначена ли задача на пользователя
         if ($task->assignees->contains($user->id)) {
-            $task->assignees()->detach($user->id); // Убираем назначение
+            $task->assignees()->detach($user->id);
             return redirect()->back()->with('success', 'Вы сняли задачу с себя.');
         }
 

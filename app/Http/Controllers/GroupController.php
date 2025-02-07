@@ -18,22 +18,27 @@ class GroupController extends Controller
 
     public function create()
     {
-        return view('groups.create');
+        $users = User::all();
+
+        return view('groups.create', compact('users'));
     }
 
     public function store(Request $request)
     {
         $user = auth()->user();
+
         $request->validate([
             'name' => 'required|string|max:255',
+            'group_leader' => 'required|exists:users,id', // Проверяем, что лидер группы существует
         ]);
 
-        Group::create([
+        $group = Group::create([
             'name' => $request->input('name'),
             'user_id' => $user->id,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'group_leader' => $request->input('group_leader'),
         ]);
+
+        $group->users()->attach($request->input('group_leader'));
 
         return redirect()->route('group')->with('success', 'Группа успешно создана!');
     }
@@ -81,6 +86,13 @@ class GroupController extends Controller
 
     public function removeMember(Group $group, User $user)
     {
+        if ($group->group_leader == $user->id) {
+
+            if (!auth()->user()->isAdmin()) {
+                return redirect()->route('group.show', $group->id)
+                    ->with('error', 'Только администратор может удалить руководителя группы!');
+            }
+        }
 
         $group->members()->detach($user->id);
 

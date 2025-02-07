@@ -14,7 +14,7 @@
 
                 <div class="card shadow-lg border-0">
                     <div class="card-body p-5">
-                        <form action="{{ route('tasks.store') }}" method="POST">
+                        <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <!-- Название задачи -->
                             <div class="mb-4">
@@ -50,29 +50,31 @@
                                 @enderror
                             </div>
 
-                            <!-- Группа задачи -->
                             <div class="mb-4">
-                                <label for="group_id" class="form-label fw-semibold">Группа</label>
-                                <select
-                                    name="group_id"
-                                    id="group_id"
-                                    class="form-control @error('group_id') is-invalid @enderror"
-                                    required>
-                                    <option value="" selected disabled>Выберите группу</option>
+                                <label class="form-label fw-semibold">Группы</label>
+                                <div>
                                     @foreach($groups as $group)
-                                        <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
-                                            {{ $group->name }}
-                                        </option>
+                                        <div class="form-check">
+                                            <input
+                                                type="checkbox"
+                                                name="group_ids[]"
+                                                id="group_{{ $group->id }}"
+                                                value="{{ $group->id }}"
+                                                class="form-check-input @error('group_ids') is-invalid @enderror"
+                                                {{ collect(old('group_ids'))->contains($group->id) ? 'checked' : '' }}>
+                                            <label for="group_{{ $group->id }}" class="form-check-label">
+                                                {{ $group->name }}
+                                            </label>
+                                        </div>
                                     @endforeach
-                                </select>
-                                @error('group_id')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                                    @error('group_ids')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
                                 </div>
-                                @enderror
                             </div>
 
-                            <!-- Приоритет задачи -->
                             <div class="mb-4">
                                 <label for="priority" class="form-label fw-semibold">Приоритет</label>
                                 <select
@@ -129,6 +131,7 @@
                                 @enderror
                             </div>
 
+                            <!-- Назначение пользователей -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Назначить на пользователей</label>
                                 <div>
@@ -166,7 +169,6 @@
                                 </div>
                                 @enderror
                             </div>
-
 
                             <!-- Кнопки действий -->
                             <div class="d-flex justify-content-between align-items-center">

@@ -80,4 +80,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class, 'creator_id');
     }
+
+    public function isAdmin()
+    {
+        return $this->roles()->where('name', 'admin')->exists();
+    }
+
 }
