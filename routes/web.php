@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FollowUpController;
@@ -84,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/tasks/{task}/assign', [TaskController::class, 'assignToMe'])->name('tasks.assign');
     Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassignFromMe'])->name('tasks.unassign');
+    Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

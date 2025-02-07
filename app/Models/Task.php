@@ -50,4 +50,10 @@ class Task extends Model
     {
         return $this->belongsToMany(Group::class, 'group_task', 'task_id', 'group_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 }

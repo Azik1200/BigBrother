@@ -42,5 +42,42 @@
                 </div>
             </div>
         </div>
+
+        {{-- Раздел для комментариев --}}
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-body">
+                <h5 class="fw-bold text-primary mb-3">Комментарии</h5>
+
+                {{-- Список комментариев --}}
+                @if ($task->comments->isEmpty())
+                    <p class="text-muted">Комментариев пока нет.</p>
+                @else
+                    <ul class="list-group list-group-flush">
+                        @foreach ($task->comments as $comment)
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>
+                                        <strong>{{ $comment->user->name . ' ' . $comment->user->surname}}</strong>
+                                        <small class="text-muted">{{ $comment->created_at->format('d.m.Y H:i') }}</small>
+                                    </span>
+                                </div>
+                                <p class="mb-0">{{ $comment->comment }}</p>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                {{-- Форма добавления нового комментария --}}
+                <hr class="my-4">
+                <form action="{{ route('comments.store', $task->id) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Добавить комментарий</label>
+                        <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Напишите комментарий..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
     </div>
 @endsection
