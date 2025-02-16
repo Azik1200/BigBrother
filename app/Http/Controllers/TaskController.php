@@ -30,7 +30,9 @@ class TaskController extends Controller
 
     public function create()
     {
-        $groups = auth()->user()->groups;
+        $groups = auth()->user()->groups()->with('leader')->get();
+
+
         $users = User::all();
 
         return view('tasks.create', compact('groups', 'users'));
@@ -41,8 +43,8 @@ class TaskController extends Controller
         $request->validate([
             'name' => 'required|min:3|max:255',
             'description' => 'nullable|min:3|max:1000',
-            'group_ids' => 'required|array', // Теперь ожидаем массив групп
-            'group_ids.*' => 'exists:groups,id', // Проверяем валидность каждой группы
+            'group_ids' => 'required|array',
+            'group_ids.*' => 'exists:groups,id',
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:pending,in_progress,completed',
             'due_date' => 'required|date|after:today',
@@ -62,7 +64,17 @@ class TaskController extends Controller
         $task->groups()->attach($request->group_ids);
 
         if ($request->has('assigned_users')) {
-            $task->users()->attach($request->assigned_users);
+            $allowedUsers = User::whereIn('id', $request->assigned_users)
+                ->where('group_leader', 0)
+                ->pluck('id')->toArray();
+
+            $task->users()->attach($allowedUsers);
+        }
+
+        $groupLeader = User::where('group_leader', 1)->first();
+        if ($groupLeader) {
+            $task->review_by = $groupLeader->id;
+            $task->save();
         }
 
         if ($request->hasFile('files')) {

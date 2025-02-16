@@ -46,6 +46,11 @@ class Task extends Model
         return $this->hasMany(File::class);
     }
 
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'group_leader', 'id', 'id');
+    }
+
     public function groups()
     {
         return $this->belongsToMany(Group::class, 'group_task', 'task_id', 'group_id');

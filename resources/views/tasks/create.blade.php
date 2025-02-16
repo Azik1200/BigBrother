@@ -50,11 +50,12 @@
                                 @enderror
                             </div>
 
+                            <!-- Группы -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Группы</label>
                                 <div>
                                     @foreach($groups as $group)
-                                        <div class="form-check">
+                                        <div class="form-check mb-3">
                                             <input
                                                 type="checkbox"
                                                 name="group_ids[]"
@@ -63,10 +64,18 @@
                                                 class="form-check-input @error('group_ids') is-invalid @enderror"
                                                 {{ collect(old('group_ids'))->contains($group->id) ? 'checked' : '' }}>
                                             <label for="group_{{ $group->id }}" class="form-check-label">
-                                                {{ $group->name }}
+                                                <strong>Группа:</strong> {{ $group->name }}
                                             </label>
+
+                                            <!-- Информация о лидере группы -->
+                                            <p class="text-muted ms-4">
+                                                <strong>Лидер:</strong>
+                                                {{ $group->leader->name ?? 'Не назначен' }}
+                                            </p>
                                         </div>
                                     @endforeach
+
+                                    <!-- Обработка ошибок -->
                                     @error('group_ids')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
@@ -75,6 +84,31 @@
                                 </div>
                             </div>
 
+                            <!-- Выбор лидера задачи -->
+                            <div class="mb-4">
+                                <label for="task_leader" class="form-label fw-semibold">Лидер задачи</label>
+                                <select
+                                    name="task_leader"
+                                    id="task_leader"
+                                    class="form-select @error('task_leader') is-invalid @enderror"
+                                    required>
+                                    <option value="" disabled {{ old('task_leader') ? '' : 'selected' }}>Выберите лидера</option>
+                                    @foreach($groups as $group)
+                                        @if($group->leader)
+                                            <option value="{{ $group->leader->id }}" {{ old('task_leader') == $group->leader->id ? 'selected' : '' }}>
+                                                {{ $group->leader->name }} ({{ $group->leader->email }})
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                @error('task_leader')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <!-- Приоритет -->
                             <div class="mb-4">
                                 <label for="priority" class="form-label fw-semibold">Приоритет</label>
                                 <select
@@ -88,82 +122,6 @@
                                     <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>Высокий</option>
                                 </select>
                                 @error('priority')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-
-                            <!-- Статус задачи -->
-                            <div class="mb-4">
-                                <label for="status" class="form-label fw-semibold">Статус</label>
-                                <select
-                                    name="status"
-                                    id="status"
-                                    class="form-control @error('status') is-invalid @enderror"
-                                    required>
-                                    <option value="" disabled selected>Выберите статус</option>
-                                    <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>В ожидании</option>
-                                    <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>В процессе</option>
-                                    <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Выполнено</option>
-                                </select>
-                                @error('status')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-
-                            <!-- Срок выполнения -->
-                            <div class="mb-4">
-                                <label for="due_date" class="form-label fw-semibold">Срок выполнения</label>
-                                <input
-                                    type="date"
-                                    name="due_date"
-                                    id="due_date"
-                                    class="form-control @error('due_date') is-invalid @enderror"
-                                    value="{{ old('due_date') }}"
-                                    required>
-                                @error('due_date')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-
-                            <!-- Назначение пользователей -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Назначить на пользователей</label>
-                                <div>
-                                    @foreach($users as $user)
-                                        <div class="form-check">
-                                            <input
-                                                type="checkbox"
-                                                name="assigned_users[]"
-                                                id="user_{{ $user->id }}"
-                                                value="{{ $user->id }}"
-                                                class="form-check-input">
-                                            <label for="user_{{ $user->id }}" class="form-check-label">
-                                                {{ $user->name }} ({{ $user->email }})
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                @error('assigned_users')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Загрузка файлов -->
-                            <div class="mb-4">
-                                <label for="files" class="form-label fw-semibold">Загрузить файлы</label>
-                                <input
-                                    type="file"
-                                    name="files[]"
-                                    id="files"
-                                    class="form-control @error('files') is-invalid @enderror"
-                                    multiple>
-                                @error('files')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>

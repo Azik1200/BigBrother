@@ -21,6 +21,10 @@ return new class extends Migration
             $table->dateTime('due_date')->nullable();
             $table->string('file_path')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->dateTime('review_date')->nullable();
+            $table->integer('review_count')->default(0);
+            $table->integer('review_by');
+            $table->dateTime('completed_at')->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamps();

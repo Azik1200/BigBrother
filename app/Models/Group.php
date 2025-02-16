@@ -38,5 +38,10 @@ class Group extends Model
         return $this->belongsToMany(Task::class, 'group_task', 'group_id', 'task_id');
     }
 
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'group_leader');
+    }
+
 
 }
