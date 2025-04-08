@@ -2,9 +2,8 @@
 
 @section('content')
     <div class="container mt-4">
-        <h1 class="mb-4">FolloUp - Информация</h1>
+        <h1 class="mb-4">FolloUp - Информация ({{ now()->format('d.m.Y') }})</h1>
 
-        <!-- Проверка, есть ли данные -->
         @if($data->isEmpty())
             <p class="text-center">Нет данных для отображения.</p>
         @else
@@ -28,7 +27,24 @@
                 </tr>
                 </thead>
                 <tbody>
-
+                @foreach($data as $row)
+                    <tr>
+                        <td>{{ $row->CHECKLIST_NAME }}</td>
+                        <td>{{ $row->BANK_DATE }}</td>
+                        <td>{{ $row->SAY }}</td>
+                        <td>{{ $row->COMMENT1 }}</td>
+                        <td>{{ $row->TRIBE }}</td>
+                        <td>{{ $row->SQUAD }}</td>
+                        <td>{{ $row->SECOND_LINE }}</td>
+                        <td>{{ $row->SECOND_LINE_EMEKDASH }}</td>
+                        <td>{{ $row->RISK_NUMBER }}</td>
+                        <td>{{ $row->RISKSTATUS }}</td>
+                        <td>{{ $row->DESCRIPTION }}</td>
+                        <td>{{ $row->CEDVEL }}</td>
+                        <td>{{ $row->PROCEDURE_NAME }}</td>
+                        <td>{{ $row->SKRIPTI_YAZAN_EMEKDASH }}</td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         @endif
