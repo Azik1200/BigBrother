@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FollowUpController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\NldController;
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\ScriptController;
 use App\Http\Controllers\TaskController;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExcelController;
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/nld', [NldController::class, 'index'])->name('nld');
+
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
