@@ -17,7 +17,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Название:</label>
-                            <p class="form-control-plaintext">{{ $nld->name }}</p>
+                            <p class="form-control-plaintext">{{ $nld->issue_key }}</p>
                         </div>
 
                         <div class="mb-3">
@@ -44,7 +44,7 @@
                             <label class="form-label fw-semibold">Дата обновления:</label>
                             <p class="form-control-plaintext">
                                 @if ($nld->updated)
-                                    {{ \Carbon\Carbon::parse($nld->updated)->format('d.m.Y H:i') }}
+                                    {{ \Carbon\Carbon::parse($nld->updated)->format('d.m.Y') }}
                                 @else
                                     Нет данных
                                 @endif
@@ -55,7 +55,7 @@
                             <label class="form-label fw-semibold">Дата создания:</label>
                             <p class="form-control-plaintext">
                                 @if ($nld->created)
-                                    {{ \Carbon\Carbon::parse($nld->created)->format('d.m.Y H:i') }}
+                                    {{ \Carbon\Carbon::parse($nld->created)->format('d.m.Y') }}
                                 @else
                                     Нет данных
                                 @endif

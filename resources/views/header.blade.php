@@ -16,6 +16,7 @@
                         Главная
                     </a>
                 </li>
+                <!--
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('tasks') ? 'active' : '' }}" href="{{ route('tasks') }}">
                         Задачи
@@ -31,8 +32,14 @@
                         Профиль
                     </a>
                 </li>
-
+-->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('nld') ? 'active' : '' }}" href="{{ route('nld') }}">
+                        NLD
+                    </a>
+                </li>
                 <!-- Проверка условий: доп пункты меню -->
+                <!--
                 @if (
 
                     auth()->user()->groups->contains('name', 'ON') ||
@@ -51,11 +58,12 @@
                         </a>
                     </li>
                 @endif
+                -->
             </ul>
 
             <!-- Кнопка выхода -->
             <div class="d-flex align-items-center gap-2">
-                @if(auth()->user() && auth()->user()->roles->pluck('name')->contains('admin', 'director'))
+                @if(auth()->user() && auth()->user()->roles->pluck('name')->contains('admin'))
                     <a href="{{ route('admin') }}" class="btn btn-outline-light">
                         <i class="bi bi-tools"></i> Админ панель
                     </a>

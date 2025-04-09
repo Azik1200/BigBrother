@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Nld;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -56,10 +57,10 @@ class NldController extends Controller
                         'parent_issue_key' => $row[8] ?? '',
                         'parent_issue_status' => $row[9] ?? '',
                         'parent_issue_number' => $row[10] ?? '',
-                        'control_status' => null,
+                        'control_status' => 'To Do',
                         'add_date' => now()->format('Y-m-d'),
                         'send_date' => now()->format('Y-m-d'),
-                        'done_date' => now()->format('Y-m-d'),
+                        'done_date' => null,
                     ];
 
                     try {
@@ -88,31 +89,21 @@ class NldController extends Controller
 
     public function edit(Nld $nld)
     {
-        return view('nlds.edit', compact('nld'));
+        $groups = Group::select('id', 'name')->get(); // получаем id и название всех групп
+
+        return view('nld.edit', compact('nld', 'groups'));
     }
+
 
     public function update(Request $request, Nld $nld)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'group_id' => 'nullable|integer',
-            'reporter_name' => 'required|string|max:255',
-            'issue_type' => 'required|string|max:255',
-            'updated' => 'required|date',
-            'created' => 'required|date',
-            'parent_issue_key' => 'nullable|string|max:255',
-            'parent_issue_status' => 'nullable|string|max:255',
-            'parent_issue_number' => 'nullable|string|max:255',
-            'control_status' => 'nullable|string|max:255',
-            'add_date' => 'required|date',
-            'send_date' => 'nullable|date',
-            'done_date' => 'nullable|date',
         ]);
 
-        $nld->update($request->all());
+        $nld->update(['group_id' => $request->input('group_id')]);
 
-        return redirect()->route('nld.index')->with('success', 'NLD запись успешно обновлена.');
+        return redirect()->route('nld')->with('success', 'Группа NLD успешно обновлена.');
     }
 
     public function destroy(Nld $nld)

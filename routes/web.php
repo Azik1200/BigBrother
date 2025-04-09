@@ -21,6 +21,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [NldController::class, 'create'])->name('nld.create');
         Route::post('/store', [NldController::class, 'store'])->name('nld.store');
         Route::get('/nld/{nld}', [NldController::class, 'show'])->name('nld.show');
+        Route::get('/nld/{nld}/edit', [NldController::class, 'edit'])->name('nld.edit');
+        Route::put('/nld/{nld}', [NldController::class, 'update'])->name('nld.update');
     });
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

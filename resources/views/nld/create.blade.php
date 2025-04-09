@@ -31,15 +31,20 @@
                                 @enderror
                                 <small class="form-text text-muted">Допустимые форматы: Excel (xlsx, xls)</small>
                             </div>
-
+<!--
                             <div class="mb-4">
-                                <label for="issue_type" class="form-label fw-semibold">Тип проблемы</label>
-                                <input type="text" name="issue_type" id="issue_type" class="form-control @error('issue_type') is-invalid @enderror" required>
+                                <label for="issue_type" class="form-label fw-semibold">Status</label>
+                                <select name="issue_type" id="issue_type" class="form-select @error('issue_type') is-invalid @enderror" required>
+                                    <option value="" selected disabled>Выберите тип проблемы</option>
+                                    <option value="To Do">To Do</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Done">Done</option>
+                                </select>
                                 @error('issue_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
+-->
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>Назад
