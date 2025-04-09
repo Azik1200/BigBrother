@@ -16,7 +16,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExcelController;
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/nld', [NldController::class, 'index'])->name('nld');
+    Route::prefix('/nld')->group(function () {
+        Route::get('/', [NldController::class, 'index'])->name('nld');
+        Route::get('/create', [NldController::class, 'create'])->name('nld.create');
+        Route::post('/store', [NldController::class, 'store'])->name('nld.store');
+        Route::get('/nld/{nld}', [NldController::class, 'show'])->name('nld.show');
+    });
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 

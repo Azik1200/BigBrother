@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('nlds', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('issue_key')->unique();
+            $table->text('summary');
             $table->text('description')->default('-');
             $table->integer('group_id')->nullable();
             $table->text('reporter_name');
