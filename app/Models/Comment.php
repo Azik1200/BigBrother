@@ -6,15 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['task_id', 'comment', 'user_id'];
+    protected $fillable = ['nld_id', 'comment', 'user_id']; // Заменили task_id на nld_id
 
-    public function task()
+    // Связь с Nld
+    public function nld()
     {
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(Nld::class); // Связь с моделью Nld
     }
 
+    // Связь с User
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class); // Связь с моделью User
     }
 }

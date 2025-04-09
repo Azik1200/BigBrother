@@ -84,7 +84,9 @@ class NldController extends Controller
 
     public function show(Nld $nld)
     {
-        return view('nld.nld', compact('nld'));
+        $comments = $nld->comments;
+
+        return view('nld.nld', compact('nld', 'comments'));
     }
 
     public function edit(Nld $nld)
@@ -101,7 +103,8 @@ class NldController extends Controller
             'group_id' => 'nullable|integer',
         ]);
 
-        $nld->update(['group_id' => $request->input('group_id')]);
+        $nld->update(['group_id' => $request->input('group_id'),
+                        'send_date' => now()->format('Y-m-d')]);
 
         return redirect()->route('nld')->with('success', 'Группа NLD успешно обновлена.');
     }
@@ -110,5 +113,13 @@ class NldController extends Controller
     {
         $nld->delete();
         return redirect()->route('nlds.index')->with('success', 'NLD запись успешно удалена.');
+    }
+
+    public function done(Nld $nld)
+    {
+        $nld->update(['done_date' => now()->format('Y-m-d'),
+            'group_id' => null]);
+
+        return redirect()->route('nld');
     }
 }

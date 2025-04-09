@@ -115,6 +115,33 @@
                             </p>
                         </div>
 
+                        <form action="{{ route('comments.store', $nld->id) }}" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="comment" class="form-label fw-semibold">Комментарий:</label>
+                                <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Добавить комментарий</button>
+                        </form>
+
+                        <!-- Список комментариев -->
+                        @if($nld->comments != null)
+                            @foreach ($nld->comments as $comment)
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <p><strong>{{ $comment->user->name ?? 'Неизвестный пользователь' }}</strong></p>
+                                        <p>{{ $comment->comment }}</p>
+                                        <p class="text-muted">
+                                            {{ \Carbon\Carbon::parse($comment->created_at)->format('d.m.Y H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <p>Комментариев нет.</p>
+                        @endif
+                    </div>
+
                         <div class="d-flex justify-content-start">
                             <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left me-1"></i>Назад к списку

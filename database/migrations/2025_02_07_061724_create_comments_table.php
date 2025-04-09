@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('nld_id'); // заменили task_id на nld_id
             $table->text('comment');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('nld_id')->references('id')->on('nlds')->onDelete('cascade'); // связь с таблицей nlds
+            $table->foreign('user_id')->references('id')->on('users'); // связь с таблицей users
         });
     }
 

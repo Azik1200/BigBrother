@@ -19,10 +19,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('/nld')->group(function () {
         Route::get('/', [NldController::class, 'index'])->name('nld');
         Route::get('/create', [NldController::class, 'create'])->name('nld.create');
+        Route::get('/show/{nld}', [NldController::class, 'show'])->name('nld.show');
         Route::post('/store', [NldController::class, 'store'])->name('nld.store');
-        Route::get('/nld/{nld}', [NldController::class, 'show'])->name('nld.show');
-        Route::get('/nld/{nld}/edit', [NldController::class, 'edit'])->name('nld.edit');
-        Route::put('/nld/{nld}', [NldController::class, 'update'])->name('nld.update');
+        Route::get('/edit/{nld}/', [NldController::class, 'edit'])->name('nld.edit');
+        Route::put('/update/{nld}', [NldController::class, 'update'])->name('nld.update');
+        Route::put('/{nld}', [NldController::class, 'done'])->name('nld.done');
     });
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -95,7 +96,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/tasks/{task}/assign', [TaskController::class, 'assignToMe'])->name('tasks.assign');
     Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassignFromMe'])->name('tasks.unassign');
-    Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/nld/{nld}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

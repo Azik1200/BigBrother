@@ -33,6 +33,11 @@
                                     <a href="{{ route('nld.show', $nld) }}" class="btn btn-outline-info btn-sm me-2">
                                         Подробнее
                                     </a>
+                                    <form action="{{ route('nld.done', $nld) }}" method="POST" style="display:inline-block;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-outline-success btn-sm">Закончено</button>
+                                    </form>
                                     @if(auth()->check() && auth()->user()->isAdmin())
                                         <a href="{{ route('nld.edit', $nld) }}" class="btn btn-outline-warning btn-sm me-2">
                                             Редактировать

@@ -25,5 +25,9 @@ class Nld extends Model
         'done_date',
     ];
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
 
