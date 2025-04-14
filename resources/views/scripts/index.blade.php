@@ -15,17 +15,17 @@
         <form action="{{ route('script.store') }}" method="POST" class="mb-4">
             @csrf
             <div class="mb-3">
-                <label for="name" class="form-label">Название скрипта</label>
+                <label for="name" class="form-label">Script name</label>
                 <input type="text" name="name" id="name" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label for="content" class="form-label">Контент</label>
+                <label for="content" class="form-label">Content</label>
                 <textarea name="content" id="content" class="form-control" rows="5" required></textarea>
             </div>
             <div class="mb-3">
-                <label for="group_id" class="form-label">Группа</label>
+                <label for="group_id" class="form-label">Group</label>
                 <select name="group_id" id="group_id" class="form-control">
-                    <option value="" selected>Без группы</option>
+                    <option value="" selected>Without a group</option>
                     @foreach ($groups as $group)
                         <option value="{{ $group->id }}">{{ $group->name }}</option>
                     @endforeach
@@ -35,18 +35,18 @@
         </form>
 
         {{-- Список скриптов --}}
-        <h2>Список скриптов</h2>
+        <h2>List of scripts</h2>
         @if ($scripts->isEmpty())
-            <p class="text-muted">Нет скриптов</p>
+            <p class="text-muted">No scripts</p>
         @else
             <ul class="list-group">
                 @foreach ($scripts as $script)
                     <li class="list-group-item">
                         <h5>{{ $script->name }}</h5>
                         <p>{{ $script->content }}</p>
-                        <small class="text-muted">Группа: {{ $script->group->name ?? 'Без группы' }}</small>
+                        <small class="text-muted">Group: {{ $script->group->name ?? 'Without a group' }}</small>
                         <br>
-                        <small class="text-muted">Автор: {{ $script->author->name ?? 'Неизвестно' }}</small>
+                        <small class="text-muted">Author: {{ $script->author->name ?? 'Unknown' }}</small>
                     </li>
                 @endforeach
             </ul>

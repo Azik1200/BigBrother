@@ -15,7 +15,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header text-center">
-                    <h2>Войти в систему</h2>
+                    <h2>Sign in</h2>
                 </div>
                 <div class="card-body">
                     <!-- Ошибки -->
@@ -33,7 +33,7 @@
                     <form action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="username" class="form-label">Имя пользователя</label>
+                            <label for="username" class="form-label">Username</label>
                             <input
                                 type="text"
                                 name="username"
@@ -41,21 +41,21 @@
                                 class="form-control"
                                 required
                                 value="{{ old('username') }}"
-                                placeholder="Введите имя пользователя">
+                                placeholder="Enter username">
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Пароль</label>
+                            <label for="password" class="form-label">Password</label>
                             <input
                                 type="password"
                                 name="password"
                                 id="password"
                                 class="form-control"
                                 required
-                                placeholder="Введите пароль">
+                                placeholder="Enter password">
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Войти</button>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
                 </div>
             </div>

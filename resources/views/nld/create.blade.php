@@ -6,9 +6,9 @@
             <div class="col-lg-8 offset-lg-2">
                 <div class="text-center mb-4">
                     <h1 class="fw-bold text-primary">
-                        <i class="bi bi-upload me-2"></i>Загрузить файл NLD
+                        <i class="bi bi-upload me-2"></i>Upload NLD file
                     </h1>
-                    <p class="text-muted">Выберите файл Excel для загрузки</p>
+                    <p class="text-muted">Select Excel file to upload</p>
                 </div>
 
                 <div class="card shadow-lg border-0">
@@ -17,7 +17,7 @@
                             @csrf
 
                             <div class="mb-4">
-                                <label for="nld_file" class="form-label fw-semibold">Выберите файл Excel NLD</label>
+                                <label for="nld_file" class="form-label fw-semibold">Select Excel NLD file</label>
                                 <input
                                     type="file"
                                     name="nld_file"
@@ -29,7 +29,7 @@
                                     {{ $message }}
                                 </div>
                                 @enderror
-                                <small class="form-text text-muted">Допустимые форматы: Excel (xlsx, xls)</small>
+                                <small class="form-text text-muted">Accepted formats: Excel (xlsx, xls)</small>
                             </div>
 <!--
                             <div class="mb-4">
@@ -47,10 +47,10 @@
 -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
-                                    <i class="bi bi-arrow-left me-1"></i>Назад
+                                    <i class="bi bi-arrow-left me-1"></i>Back
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-upload me-1"></i>Загрузить и создать
+                                    <i class="bi bi-upload me-1"></i>Download and create
                                 </button>
                             </div>
                         </form>

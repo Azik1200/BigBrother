@@ -10,23 +10,23 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('admin') }}">Админ Панель</a>
+            <a class="navbar-brand" href="{{ route('admin') }}">Admin Panel</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Главная</a>
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('followup') ? 'active' : '' }}" href="{{ route('followup') }}">FolloUp</a>
+                        <a class="nav-link {{ request()->routeIs('followup') ? 'active' : '' }}" href="{{ route('followup') }}">Followup</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Пользователи</a>
+                        <a class="nav-link" href="#">Users</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Аналитика</a>
+                        <a class="nav-link" href="#">Analytics</a>
                     </li>
                 </ul>
             </div>

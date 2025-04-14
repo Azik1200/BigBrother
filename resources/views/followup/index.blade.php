@@ -2,10 +2,10 @@
 
 @section('content')
     <div class="container mt-4">
-        <h1 class="mb-4">FolloUp - Информация ({{ now()->format('d.m.Y') }})</h1>
+        <h1 class="mb-4">FollowUp - Information ({{ now()->format('d.m.Y') }})</h1>
 
         @if($data->isEmpty())
-            <p class="text-center">Нет данных для отображения.</p>
+            <p class="text-center">There is no data to display.</p>
         @else
             <table class="table table-bordered table-striped">
                 <thead>

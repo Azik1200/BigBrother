@@ -2,10 +2,10 @@
 
 @section('content')
     <div class="container my-5">
-        <h1>Мои группы</h1>
+        <h1>My groups</h1>
 
         @if ($groups->isEmpty())
-            <p>Вы не являетесь участником ни одной группы.</p>
+            <p>You are not a member of any groups.</p>
         @else
             <ul>
                 @foreach ($groups as $group)
@@ -18,7 +18,7 @@
 
         {{-- Кнопка возврата ко всем группам --}}
         <a href="{{ route('dashboard') }}" class="btn btn-secondary mt-4">
-            <i class="bi bi-arrow-left-circle me-2"></i>Назад на начальную странцу
+            <i class="bi bi-arrow-left-circle me-2"></i>Back to home page
         </a>
     </div>
 @endsection

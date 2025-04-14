@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container my-4">
-        <h1>Содержимое Excel-файла</h1>
+        <h1>Contents of the Excel file</h1>
         @if(!empty($data))
             <table class="table table-bordered">
                 <thead>
@@ -23,8 +23,8 @@
                 </tbody>
             </table>
         @else
-            <p>Excel-файл пустой или не может быть прочитан.</p>
+            <p>The Excel file is empty or cannot be read.</p>
         @endif
-        <a href="{{ route('excel.index') }}" class="btn btn-secondary mt-3">Назад</a>
+        <a href="{{ route('excel.index') }}" class="btn btn-secondary mt-3">Back</a>
     </div>
 @endsection

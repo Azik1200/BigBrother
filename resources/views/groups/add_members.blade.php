@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container my-5">
-        <h1>Добавление участников в группу: {{ $group->name }}</h1>
+        <h1>Adding members to a group: {{ $group->name }}</h1>
 
         {{-- Сообщение об ошибке валидации --}}
         @if ($errors->any())
@@ -21,22 +21,22 @@
 
             {{-- Список пользователей для выбора --}}
             <div class="form-group">
-                <label for="user_ids">Выберите участников:</label>
+                <label for="user_ids">Select participants:</label>
                 <select name="user_ids[]" id="user_ids" class="form-control" multiple>
                     @forelse ($users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                     @empty
-                        <option disabled>Нет доступных пользователей</option>
+                        <option disabled>No users available</option>
                     @endforelse
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-success mt-3">Добавить участников</button>
+            <button type="submit" class="btn btn-success mt-3">Add participants</button>
         </form>
 
         {{-- Кнопка возврата к группе --}}
         <a href="{{ route('group.show', $group->id) }}" class="btn btn-secondary mt-4">
-            Назад в группу
+            Back to the group
         </a>
     </div>
 @endsection

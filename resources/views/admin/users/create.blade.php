@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="container mt-4">
-        <h1 class="mb-4">Добавить пользователя</h1>
+        <h1 class="mb-4">Add user</h1>
 
-        <a href="{{ route('admin.users') }}" class="btn btn-secondary mb-4">Вернуться к списку пользователей</a>
+        <a href="{{ route('admin.users') }}" class="btn btn-secondary mb-4">Back to users list</a>
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -21,12 +21,12 @@
         <form action="{{ route('admin.user.store') }}" method="POST">
             @csrf
             <div class="mb-3">
-                <label for="name" class="form-label">Имя</label>
+                <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
             </div>
 
             <div class="mb-3">
-                <label for="last_name" class="form-label">Фамилия</label>
+                <label for="last_name" class="form-label">Surname</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name') }}" required>
             </div>
 
@@ -41,22 +41,22 @@
             </div>
 
             <div class="mb-3">
-                <label for="phone" class="form-label">Телефон</label>
+                <label for="phone" class="form-label">Phone</label>
                 <input type="tel" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label">Пароль</label>
+                <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
 
             <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Подтверждение пароля</label>
+                <label for="password_confirmation" class="form-label">Confirm password</label>
                 <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Роли</label>
+                <label class="form-label">Roles</label>
                 <div id="roles">
                     @foreach ($roles as $role)
                         <div class="form-check">
@@ -70,7 +70,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Группы</label>
+                <label class="form-label">Groups</label>
                 <div id="groups">
                     @foreach ($groups as $group)
                         <div class="form-check">
@@ -83,7 +83,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-success">Создать пользователя</button>
+            <button type="submit" class="btn btn-success">Create user</button>
         </form>
     </div>
 @endsection

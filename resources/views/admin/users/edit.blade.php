@@ -7,9 +7,9 @@
 
                 <div class="text-center mb-4">
                     <h1 class="fw-bold text-primary">
-                        <i class="bi bi-pencil me-2"></i>Редактировать пользователя
+                        <i class="bi bi-pencil me-2"></i>Edit user
                     </h1>
-                    <p class="text-muted">Обновите данные пользователя</p>
+                    <p class="text-muted">Update user data</p>
                 </div>
 
                 <div class="card shadow-lg border-0">
@@ -20,7 +20,7 @@
 
                             <!-- Имя -->
                             <div class="mb-4">
-                                <label for="name" class="form-label fw-semibold">Имя</label>
+                                <label for="name" class="form-label fw-semibold">Name</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -35,7 +35,7 @@
 
                             <!-- Фамилия -->
                             <div class="mb-4">
-                                <label for="last_name" class="form-label fw-semibold">Фамилия</label>
+                                <label for="last_name" class="form-label fw-semibold">Surname</label>
                                 <input
                                     type="text"
                                     name="last_name"
@@ -50,7 +50,7 @@
 
                             <!-- Логин -->
                             <div class="mb-4">
-                                <label for="username" class="form-label fw-semibold">Логин</label>
+                                <label for="username" class="form-label fw-semibold">Login</label>
                                 <input
                                     type="text"
                                     name="username"
@@ -80,7 +80,7 @@
 
                             <!-- Телефон -->
                             <div class="mb-4">
-                                <label for="phone" class="form-label fw-semibold">Телефон</label>
+                                <label for="phone" class="form-label fw-semibold">Phone</label>
                                 <input
                                     type="text"
                                     name="phone"
@@ -95,7 +95,7 @@
 
                             <!-- Пароль -->
                             <div class="mb-4">
-                                <label for="password" class="form-label fw-semibold">Пароль</label>
+                                <label for="password" class="form-label fw-semibold">Password</label>
                                 <input
                                     type="password"
                                     name="password"
@@ -109,7 +109,7 @@
 
                             <!-- Повтор пароля -->
                             <div class="mb-4">
-                                <label for="password_confirmation" class="form-label fw-semibold">Подтвердите пароль</label>
+                                <label for="password_confirmation" class="form-label fw-semibold">Confirm password</label>
                                 <input
                                     type="password"
                                     name="password_confirmation"
@@ -120,7 +120,7 @@
 
                             <!-- Роли -->
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Роли</label>
+                                <label class="form-label fw-semibold">Roles</label>
                                 <div>
                                     @foreach($roles as $role)
                                         <div class="form-check">
@@ -143,7 +143,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Группы</label>
+                                <label class="form-label fw-semibold">Groups</label>
                                 <div>
                                     @foreach($groups as $group)
                                         <div class="form-check">
@@ -163,8 +163,8 @@
                             </div>
 
 
-                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-                            <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary">Назад</a>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary">Back</a>
                         </form>
                     </div>
                 </div>

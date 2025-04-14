@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <!-- Логотип или название приложения -->
-        <a class="navbar-brand" href="{{ route('dashboard') }}">Моё приложение</a>
+        <a class="navbar-brand" href="{{ route('dashboard') }}">BigBrother</a>
 
         <!-- Кнопка для открытия меню в мобильной версии -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,23 +13,23 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        Главная
+                        Main
                     </a>
                 </li>
                 <!--
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('tasks') ? 'active' : '' }}" href="{{ route('tasks') }}">
-                        Задачи
+                        Tasks
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('group.list') ? 'active' : '' }}" href="{{ route('group.list') }}">
-                        Группы
+                        Groups
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        Профиль
+                        Profile
                     </a>
                 </li>
 -->
@@ -65,14 +65,14 @@
             <div class="d-flex align-items-center gap-2">
                 @if(auth()->user() && auth()->user()->roles->pluck('name')->contains('admin'))
                     <a href="{{ route('admin') }}" class="btn btn-outline-light">
-                        <i class="bi bi-tools"></i> Админ панель
+                        <i class="bi bi-tools"></i> Admin panel
                     </a>
                 @endif
 
                 <form action="{{ route('logout') }}" method="POST" class="mb-0">
                     @csrf
                     <button class="btn btn-outline-light" type="submit">
-                        <i class="bi bi-box-arrow-right"></i> Выйти
+                        <i class="bi bi-box-arrow-right"></i> Logout
                     </button>
                 </form>
             </div>

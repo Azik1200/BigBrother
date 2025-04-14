@@ -3,10 +3,10 @@
 @section('content')
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="fw-bold">Список NLD</h1>
+            <h1 class="fw-bold">NLD List</h1>
             @if(auth()->check() && auth()->user()->isAdmin())
                 <a href="{{ route('nld.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>Создать NLD
+                    <i class="bi bi-plus-circle me-2"></i>Create NLD
                 </a>
             @endif
         </div>
@@ -20,32 +20,32 @@
                             <p class="mb-1 text-muted">{{ Str::limit($nld->description, 100) }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
-                                    <i class="bi bi-person-fill me-1"></i> Репортер: {{ $nld->reporter_name }} |
-                                    <i class="bi bi-type me-1"></i> Тип: {{ $nld->issue_type }} |
-                                    <i class="bi bi-calendar-check me-1"></i> Обновлено:
+                                    <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
+                                    <i class="bi bi-type me-1"></i> Issue Type: {{ $nld->issue_type }} |
+                                    <i class="bi bi-calendar-check me-1"></i> Updated:
                                     @if ($nld->updated)
                                         {{ \Carbon\Carbon::parse($nld->updated)->format('d.m.Y') }}
                                     @else
-                                        Нет данных
+                                        No info
                                     @endif
                                 </small>
                                 <div>
                                     <a href="{{ route('nld.show', $nld) }}" class="btn btn-outline-info btn-sm me-2">
-                                        Подробнее
+                                        Read more
                                     </a>
                                     <form action="{{ route('nld.done', $nld) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('PUT')
-                                        <button type="submit" class="btn btn-outline-success btn-sm">Закончено</button>
+                                        <button type="submit" class="btn btn-outline-success btn-sm">Finished</button>
                                     </form>
                                     @if(auth()->check() && auth()->user()->isAdmin())
                                         <a href="{{ route('nld.edit', $nld) }}" class="btn btn-outline-warning btn-sm me-2">
-                                            Редактировать
+                                            Edit
                                         </a>
                                         <form action="" method="POST" style="display:inline-block;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                         </form>
                                     @endif
                                 </div>
@@ -54,7 +54,7 @@
                     @endif
                 @endforeach
             @else
-                <p class="text-muted">Нет ни одной записи NLD.</p>
+                <p class="text-muted">There are no NLD records.</p>
             @endif
         </div>
     </div>

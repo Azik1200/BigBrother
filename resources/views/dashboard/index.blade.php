@@ -7,18 +7,18 @@
             <!-- Информация о профиле -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Профиль</h5>
+                    <h5 class="mb-0">Profile</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Имя:</strong> {{ $user->name }}</p>
-                    <p><strong>Фамилия:</strong> {{ $user->surname }}</p>
+                    <p><strong>Name:</strong> {{ $user->name }}</p>
+                    <p><strong>Surname:</strong> {{ $user->surname }}</p>
                 </div>
             </div>
 
             <!-- Информация о группах -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Группы</h5>
+                    <h5 class="mb-0">Groups</h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
@@ -27,7 +27,7 @@
                                 <i class="bi bi-people-fill text-success me-2"></i> {{ $group->name }}
                             </li>
                         @empty
-                            <li class="list-group-item text-muted">Нет групп</li>
+                            <li class="list-group-item text-muted">No groups</li>
                         @endforelse
                     </ul>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">Мои задачи</h5>
+                            <h5 class="mb-0">My tasks</h5>
                         </div>
                         <div class="card-body">
                             <ul class="list-group">
@@ -52,26 +52,26 @@
                                         </div>
 
                                         <div class="text-muted small">
-                                            Группа: {{ $task->group->name ?? 'Без группы' }} <br>
-                                            Создатель: {{ $task->creator ? $task->creator->name . ' ' . $task->creator->surname : 'Неизвестно' }} <br>
-                                            Срок выполнения: {{ $task->due_date ? $task->due_date : 'Не указан' }}
+                                            Group: {{ $task->group->name ?? 'Без группы' }} <br>
+                                            Creator: {{ $task->creator ? $task->creator->name . ' ' . $task->creator->surname : 'Неизвестно' }} <br>
+                                            Completion date: {{ $task->due_date ? $task->due_date : 'Не указан' }}
                                         </div>
 
                                         <div class="mt-2 d-flex justify-content-between">
                                             <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-outline-primary btn-sm">
-                                                Перейти к задаче
+                                                Go to task
                                             </a>
 
                                             <form action="{{ route('tasks.unassign', $task->id) }}" method="POST" style="margin: 0;">
                                                 @csrf
                                                 <button type="submit" class="btn btn-outline-success btn-sm">
-                                                    Снять с себя
+                                                    Take off yourself
                                                 </button>
                                             </form>
                                         </div>
                                     </li>
                                 @empty
-                                    <li class="list-group-item text-muted">Нет задач</li>
+                                    <li class="list-group-item text-muted">No tasks</li>
                                 @endforelse
                             </ul>
                         </div>
@@ -82,7 +82,7 @@
                 <div class="col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-header bg-danger text-white">
-                            <h5 class="mb-0">Задачи без исполнителя</h5>
+                            <h5 class="mb-0">Tasks without an executor</h5>
                         </div>
                         <div class="card-body">
                             <ul class="list-group">
@@ -93,25 +93,25 @@
                                         </div>
 
                                         <div class="text-muted small">
-                                            Группа: {{ $task->group->name ?? 'Без группы' }} <br>
-                                            Создатель: {{ $task->creator ? $task->creator->name . ' ' . $task->creator->surname : 'Неизвестно' }} <br>
-                                            Срок выполнения: {{ $task->due_date ? $task->due_date : 'Не указан' }}
+                                            Group: {{ $task->group->name ?? 'Без группы' }} <br>
+                                            Creator: {{ $task->creator ? $task->creator->name . ' ' . $task->creator->surname : 'Неизвестно' }} <br>
+                                            Completion date: {{ $task->due_date ? $task->due_date : 'Не указан' }}
                                         </div>
 
                                         <div class="mt-2 d-flex justify-content-between">
                                             <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-outline-primary btn-sm">
-                                                Перейти к задаче
+                                                Go to task
                                             </a>
                                             <form action="{{ route('tasks.assign', $task->id) }}" method="POST" style="margin: 0;">
                                                 @csrf
                                                 <button type="submit" class="btn btn-outline-success btn-sm">
-                                                    Взять на себя
+                                                    Take on
                                                 </button>
                                             </form>
                                         </div>
                                     </li>
                                 @empty
-                                    <li class="list-group-item text-muted">Нет задач</li>
+                                    <li class="list-group-item text-muted">No tasks</li>
                                 @endforelse
                             </ul>
                         </div>
