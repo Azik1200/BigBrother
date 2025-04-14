@@ -16,7 +16,12 @@
                 @foreach($nlds as $nld)
                     @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->groups[0]->id == $nld->group_id || auth()->check() && auth()->user()->isAdmin())
                         <div class="list-group-item py-3">
-                            <h5 class="mb-1">{{ $nld->issue_key }}</h5>
+                            <h5 class="mb-1">
+                                <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}" target="_blank">
+                                    {{ $nld->issue_key }}
+                                </a>
+                            </h5>
+
                             <p class="mb-1 text-muted">{{ Str::limit($nld->description, 100) }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">

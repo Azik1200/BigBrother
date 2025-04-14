@@ -17,8 +17,13 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Issue key:</label>
-                            <p class="form-control-plaintext">{{ $nld->issue_key }}</p>
+                            <p class="form-control-plaintext">
+                                <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}" target="_blank">
+                                    {{ $nld->issue_key }}
+                                </a>
+                            </p>
                         </div>
+
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Description:</label>
