@@ -4,17 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Nld;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class NldController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $nlds = Nld::all();
-        return view('nld.index', compact('nlds'));
+        $query = Nld::query();
+
+        if ($request->filled('issue_key')) {
+            $query->where('issue_key', 'like', '%' . $request->issue_key . '%');
+        }
+
+        if ($request->filled('reporter_name')) {
+            $query->where('reporter_name', 'like', '%' . $request->reporter_name . '%');
+        }
+
+        if ($request->filled('issue_type')) {
+            $query->where('issue_type', $request->issue_type);
+        }
+
+        if ($request->filled('group_id')) {
+            $query->where('group_id', $request->group_id);
+        }
+
+        if ($request->filled('done')) {
+            if ($request->done == '1') {
+                $query->whereNotNull('done_date');
+            } elseif ($request->done == '0') {
+                $query->whereNull('done_date');
+            }
+        }
+
+        $nlds = $query->orderByDesc('add_date')->get();
+        $groups = Group::all();
+
+        return view('nld.index', compact('nlds', 'groups'));
     }
+
 
     public function create()
     {
@@ -45,18 +75,22 @@ class NldController extends Controller
                 }
 
                 foreach (array_slice($rows, 1) as $row) {
+
+                    $excelCreated = is_numeric($row[6]) ? Carbon::createFromDate(1900, 1, 1)->addDays($row[6] - 2)->format('Y-m-d') : now()->format('Y-m-d');
+                    $excelUpdated = is_numeric($row[5]) ? Carbon::createFromDate(1900, 1, 1)->addDays($row[5] - 2)->format('Y-m-d') : now()->format('Y-m-d');
+
                     $nldData = [
                         'issue_key' => $row[0] ?? null,
                         'group_id' => null,
-                        'summary' => $row[2] ?? '',
-                        'description' => $row[3] ?? '-',
-                        'reporter_name' => $row[4] ?? '',
-                        'issue_type' => $row[5] ?? '',
-                        'updated' => now()->format('Y-m-d'),
-                        'created' => now()->format('Y-m-d'),
-                        'parent_issue_key' => $row[8] ?? '',
-                        'parent_issue_status' => $row[9] ?? '',
-                        'parent_issue_number' => $row[10] ?? '',
+                        'summary' => $row[1] ?? '',
+                        'description' => $row[2] ?? '-',
+                        'reporter_name' => $row[3] ?? '',
+                        'issue_type' => $row[4] ?? '',
+                        'updated' => $excelCreated,
+                        'created' => $excelUpdated,
+                        'parent_issue_key' => $row[7] ?? '',
+                        'parent_issue_status' => $row[8] ?? '',
+                        'parent_issue_number' => $row[9] ?? '',
                         'control_status' => 'To Do',
                         'add_date' => now()->format('Y-m-d'),
                         'send_date' => now()->format('Y-m-d'),
@@ -117,8 +151,7 @@ class NldController extends Controller
 
     public function done(Nld $nld)
     {
-        $nld->update(['done_date' => now()->format('Y-m-d'),
-            'group_id' => null]);
+        $nld->update(['done_date' => now()->format('Y-m-d')]);
 
         return redirect()->route('nld');
     }

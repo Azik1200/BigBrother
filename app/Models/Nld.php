@@ -29,5 +29,10 @@ class Nld extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
 }
 

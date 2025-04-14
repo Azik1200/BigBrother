@@ -24,15 +24,20 @@
                             </p>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Summary:</label>
+                            <p class="form-control-plaintext">{{ $nld->summary ?? 'Нет описания' }}</p>
+                        </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Description:</label>
                             <p class="form-control-plaintext">{{ $nld->description ?? 'Нет описания' }}</p>
                         </div>
 
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Group:</label>
-                            <p class="form-control-plaintext">{{ $nld->group_id ?? 'Не указано' }}</p>
+                            <p class="form-control-plaintext">{{ $nld->group->name ?? 'No group' }}</p>
                         </div>
 
                         <div class="mb-3">
