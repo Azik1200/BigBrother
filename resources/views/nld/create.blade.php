@@ -46,7 +46,7 @@
                             </div>
 -->
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('nld.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>Back
                                 </a>
                                 <button type="submit" class="btn btn-primary">

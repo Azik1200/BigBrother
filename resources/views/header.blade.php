@@ -18,7 +18,7 @@
                 </li>
                 <!--
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('tasks') ? 'active' : '' }}" href="{{ route('tasks') }}">
+                    <a class="nav-link {{ request()->routeIs('tasks.index') ? 'active' : '' }}" href="{{ route('tasks.index') }}">
                         Tasks
                     </a>
                 </li>
@@ -34,7 +34,7 @@
                 </li>
 -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('nld') ? 'active' : '' }}" href="{{ route('nld') }}">
+                    <a class="nav-link {{ request()->routeIs('nld.index') ? 'active' : '' }}" href="{{ route('nld.index') }}">
                         NLD
                     </a>
                 </li>
@@ -47,16 +47,6 @@
                     auth()->user()->roles->pluck('name')->contains('admin')
 
                 )
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('followup') ? 'active' : '' }}" href="{{ route('followup') }}">
-                            FollowUp
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('jira') ? 'active' : '' }}" href="{}">
-                            Jira
-                        </a>
-                    </li>
                 @endif
                 -->
             </ul>
@@ -64,7 +54,7 @@
             <!-- Кнопка выхода -->
             <div class="d-flex align-items-center gap-2">
                 @if(auth()->user() && auth()->user()->roles->pluck('name')->contains('admin'))
-                    <a href="{{ route('admin') }}" class="btn btn-outline-light">
+                    <a href="{{ route('admin.index') }}" class="btn btn-outline-light">
                         <i class="bi bi-tools"></i> Admin panel
                     </a>
                 @endif

@@ -125,7 +125,7 @@
                             </div>
 
                             <div class="d-flex justify-content-start">
-                                <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('nld.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>Back to list
                                 </a>
                                 <button type="submit" class="btn btn-warning ms-2">

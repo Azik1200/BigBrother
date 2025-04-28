@@ -182,7 +182,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('tasks') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>Назад
                                 </a>
                                 <button type="submit" class="btn btn-primary">

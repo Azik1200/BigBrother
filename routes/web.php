@@ -1,110 +1,111 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FileController;
-use App\Http\Controllers\FollowUpController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\NldController;
-use App\Http\Controllers\ProcedureController;
-use App\Http\Controllers\ScriptController;
-use App\Http\Controllers\TaskController;
+use App\Http\Controllers\{
+    AdminController,
+    AuthController,
+    CommentController,
+    DashboardController,
+    ExcelController,
+    FileController,
+    FollowUpController,
+    GroupController,
+    NldController,
+    ProcedureController,
+    ScriptController,
+    TaskController
+};
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ExcelController;
 
-Route::middleware(['auth'])->group(function () {
-    Route::prefix('/nld')->group(function () {
-        Route::get('/', [NldController::class, 'index'])->name('nld');
-        Route::get('/create', [NldController::class, 'create'])->name('nld.create');
-        Route::get('/show/{nld}', [NldController::class, 'show'])->name('nld.show');
-        Route::post('/store', [NldController::class, 'store'])->name('nld.store');
-        Route::get('/edit/{nld}/', [NldController::class, 'edit'])->name('nld.edit');
-        Route::put('/update/{nld}', [NldController::class, 'update'])->name('nld.update');
-        Route::put('/{nld}', [NldController::class, 'done'])->name('nld.done');
-    });
+// Public routes (no auth)
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/excel', [ExcelController::class, 'index'])->name('excel.index');
+Route::post('/excel/upload', [ExcelController::class, 'upload'])->name('excel.upload');
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+// Authenticated routes
+Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::prefix('/procedures')->group(function () {
-        Route::get('/', [ProcedureController::class, 'index'])->name('procedures');
-        Route::post('/', [ProcedureController::class, 'store'])->name('procedures.store');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // NLD
+    Route::prefix('nld')->name('nld.')->group(function () {
+        Route::get('/', [NldController::class, 'index'])->name('index');
+        Route::get('/create', [NldController::class, 'create'])->name('create');
+        Route::post('/store', [NldController::class, 'store'])->name('store');
+        Route::get('/show/{nld}', [NldController::class, 'show'])->name('show');
+        Route::get('/edit/{nld}', [NldController::class, 'edit'])->name('edit');
+        Route::put('/update/{nld}', [NldController::class, 'update'])->name('update');
+        Route::put('/{nld}/done', [NldController::class, 'done'])->name('done');
+        Route::post('/{nld}/comments', [CommentController::class, 'store'])->name('comments.store');
     });
 
-    Route::prefix('/script')->group(function () {
-        Route::get('/', [ScriptController::class, 'index'])->name('script');
-        Route::post('/', [ScriptController::class, 'store'])->name('script.store');
+    // Tasks
+    Route::prefix('tasks')->name('tasks.')->group(function () {
+        Route::get('/', [TaskController::class, 'index'])->name('index');
+        Route::get('/create', [TaskController::class, 'create'])->name('create');
+        Route::post('/', [TaskController::class, 'store'])->name('store');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('show');
+        Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('edit');
+        Route::put('/{task}', [TaskController::class, 'update'])->name('update');
+        Route::delete('/{task}', [TaskController::class, 'destroy'])->name('destroy');
+        Route::post('/{task}/assign', [TaskController::class, 'assignToMe'])->name('assign');
+        Route::post('/{task}/unassign', [TaskController::class, 'unassignFromMe'])->name('unassign');
     });
 
+    // Procedures
+    Route::prefix('procedures')->name('procedures.')->group(function () {
+        Route::get('/', [ProcedureController::class, 'index'])->name('index');
+        Route::post('/', [ProcedureController::class, 'store'])->name('store');
+    });
 
-    Route::prefix('groups')->group(function () {
-        Route::get('/list', [GroupController::class, 'myGroups'])->name('group.list');
+    // Scripts
+    Route::prefix('script')->name('script.')->group(function () {
+        Route::get('/', [ScriptController::class, 'index'])->name('index');
+        Route::post('/', [ScriptController::class, 'store'])->name('store');
+    });
 
+    // Groups (open part)
+    Route::prefix('groups')->name('group.')->group(function () {
+        Route::get('/list', [GroupController::class, 'myGroups'])->name('list');
+
+        // Groups (admin only)
         Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
-            Route::get('/', [GroupController::class, 'index'])->name('group');
-            Route::get('/create', [GroupController::class, 'create'])->name('group.create');
-            Route::post('/', [GroupController::class, 'store'])->name('group.store');
+            Route::get('/', [GroupController::class, 'index'])->name('index');
+            Route::get('/create', [GroupController::class, 'create'])->name('create');
+            Route::post('/', [GroupController::class, 'store'])->name('store');
 
-            Route::prefix('/files')->group(function () {
-                Route::post('/upload', [FileController::class, 'upload'])->name('files.upload');
-                Route::delete('/delete', [FileController::class, 'delete'])->name('files.delete');
+            Route::prefix('files')->name('files.')->group(function () {
+                Route::post('/upload', [FileController::class, 'upload'])->name('upload');
+                Route::delete('/delete', [FileController::class, 'delete'])->name('delete');
             });
 
-
-            Route::prefix('/{group}')->group(function () {
-                Route::get('/', [GroupController::class, 'show'])->name('group.show');
-                Route::get('/edit', [GroupController::class, 'edit'])->name('group.edit');
-                Route::put('/', [GroupController::class, 'update'])->name('group.update');
-                Route::put('/', [GroupController::class, 'delete'])->name('group.delete');
-                Route::get('/add-members', [GroupController::class, 'addMembersForm'])->name('group.add_members');
-                Route::post('/add-members', [GroupController::class, 'addMembers'])->name('group.store_members');
-                Route::delete('/members/{user}', [GroupController::class, 'removeMember'])->name('group.remove_member');
+            Route::prefix('{group}')->group(function () {
+                Route::get('/', [GroupController::class, 'show'])->name('show');
+                Route::get('/edit', [GroupController::class, 'edit'])->name('edit');
+                Route::put('/', [GroupController::class, 'update'])->name('update');
+                Route::put('/delete', [GroupController::class, 'delete'])->name('delete');
+                Route::get('/add-members', [GroupController::class, 'addMembersForm'])->name('add_members');
+                Route::post('/add-members', [GroupController::class, 'addMembers'])->name('store_members');
+                Route::delete('/members/{user}', [GroupController::class, 'removeMember'])->name('remove_member');
             });
-
         });
     });
 
-    Route::prefix('admin')->group(function () {
-        Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
-            Route::get('/', [AdminController::class, 'index'])->name('admin');
+    // Admin
+    Route::prefix('admin')->middleware(RoleMiddleware::class . ':admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
 
-            Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
-
-
-            Route::prefix('/users')->group(function () {
-                Route::get('/', [AdminController::class, 'users'])->name('admin.users');
-                Route::get('/create/new', [AdminController::class, 'usersCreate'])->name('admin.user.create');
-                Route::get('/{user}/edit', [AdminController::class, 'usersEdit'])->name('admin.user.edit');
-                Route::put('/{user}', [AdminController::class, 'usersUpdate'])->name('admin.user.update');
-                Route::get('/{user}', [AdminController::class, 'userShow'])->name('admin.user.show'); //TODO нужно дорабоать есть ошибка
-
-                Route::post('/', [AdminController::class, 'usersStore'])->name('admin.user.store');
-            });
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [AdminController::class, 'users'])->name('index');
+            Route::get('/create/new', [AdminController::class, 'usersCreate'])->name('create');
+            Route::post('/', [AdminController::class, 'usersStore'])->name('store');
+            Route::get('/{user}', [AdminController::class, 'userShow'])->name('show');
+            Route::get('/{user}/edit', [AdminController::class, 'usersEdit'])->name('edit');
+            Route::put('/{user}', [AdminController::class, 'usersUpdate'])->name('update');
         });
     });
-
-    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks');
-    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
-    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
-    Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
-    Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
-    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-    Route::post('/tasks/{task}/assign', [TaskController::class, 'assignToMe'])->name('tasks.assign');
-    Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassignFromMe'])->name('tasks.unassign');
-    Route::post('/nld/{nld}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
-
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-Route::get('/excel', [ExcelController::class, 'index'])->name('excel.index'); // Форма для загрузки
-Route::post('/excel/upload', [ExcelController::class, 'upload'])->name('excel.upload'); // Загрузка файла
-
-

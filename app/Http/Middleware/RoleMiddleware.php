@@ -11,12 +11,10 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string $role = 'view')
     {
         if (Auth::guest()) {
-            return redirect()->route('login');
+            return $next($request); // Просто пропускаем гостей без проверки роли
         }
 
-        $user = $request->user();
-
-        if (!$user || !$user->hasRole($role)) {
+        if (!$request->user() || !$request->user()->hasRole($role)) {
             abort(403, 'У вас нет прав для выполнения этого действия.');
         }
 

@@ -153,7 +153,7 @@
                     </div>
 
                         <div class="d-flex justify-content-start">
-                            <a href="{{ route('nld') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('nld.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left me-1"></i>Back to list
                             </a>
                             <a href="" class="btn btn-outline-warning ms-2">

@@ -13,7 +13,7 @@
                 </a>
             @endif
         </div>
-        <form method="GET" action="{{ route('nld') }}" class="mb-4">
+        <form method="GET" action="{{ route('nld.index') }}" class="mb-4">
             <div class="row g-3">
                 <div class="col-md-2">
                     <input type="text" name="issue_key" value="{{ request('issue_key') }}" class="form-control" placeholder="Issue Key">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-md-2 d-flex">
                     <button type="submit" class="btn btn-primary me-2">Filter</button>
-                    <a href="{{ route('nld') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('nld.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </div>
         </form>
