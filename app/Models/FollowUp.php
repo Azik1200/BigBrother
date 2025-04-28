@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FollowUp extends Model
 {
     protected $table = 'followup_table';
+
     protected $fillable = [
         'CHECKLIST_NAME',
         'BANK_DATE',
@@ -21,6 +22,6 @@ class FollowUp extends Model
         'DESCRIPTION',
         'CEDVEL',
         'PROCEDURE_NAME',
-        'SKRIPTI_YAZAN_EMEKDASH'
+        'SKRIPTI_YAZAN_EMEKDASH',
     ];
 }

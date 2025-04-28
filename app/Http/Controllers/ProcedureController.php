@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Models\Procedure;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FileController;
+use Illuminate\Support\Facades\Storage;
 
 class ProcedureController extends Controller
 {
@@ -20,18 +21,18 @@ class ProcedureController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'file' => 'required',
-            'group_id' => 'required|exists:groups,id',
+            'name' => ['required', 'string', 'max:255'],
+            'file' => ['required', 'file'],
+            'group_id' => ['required', 'exists:groups,id'],
         ]);
 
-        $fileController = new FileController();
-        $uploadResponse = $fileController->upload($request);
+        if (!$request->hasFile('file')) {
+            return redirect()->back()->with('error', 'Файл не найден.');
+        }
 
-        $uploadData = $uploadResponse->getData();
-
-        if ($uploadData->success) {
-            $filePath = $uploadData->file_path;
+        try {
+            $file = $validated['file'];
+            $filePath = $file->store('admin/files', 'public');
 
             Procedure::create([
                 'name' => $validated['name'],
@@ -40,8 +41,8 @@ class ProcedureController extends Controller
             ]);
 
             return redirect()->route('procedures')->with('success', 'Процедура успешно добавлена!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ошибка при загрузке файла: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('error', 'Не удалось загрузить файл. Попробуйте ещё раз.');
     }
 }

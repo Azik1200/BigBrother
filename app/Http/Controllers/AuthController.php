@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -14,27 +15,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required',
-            'password' => [
-                'required',
-                'string',
-                'min:8',          // Минимум 8 символов
-                'max:20',         // Максимум 20 символов
-                \Illuminate\Validation\Rules\Password::defaults(),
-            ],
-
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'max:20', Password::defaults()],
         ]);
 
-        if (Auth::attempt($request->only('username', 'password'))) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'email' => 'Неверный адрес username почты или пароль.',
-        ]);
-
+            'username' => 'incorrect username or password', // Исправил 'email' на 'username'
+        ])->onlyInput('username');
     }
 
     public function logout(Request $request)

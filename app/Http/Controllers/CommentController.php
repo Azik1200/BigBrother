@@ -22,7 +22,7 @@ class CommentController extends Controller
             'comment' => $request->comment,
             'user_id' => auth()->id(),
         ]);
-//TODO MAIL
+        //TODO MAIL
         //$recipient = 'aziz.salimli@kapitalbank.az';
 
         //Mail::to($recipient)->send(new NewCommentNotification($request->comment, $nld));

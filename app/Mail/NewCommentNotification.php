@@ -13,13 +13,12 @@ class NewCommentNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-
     public $comment;
     public $nld;
 
+    /**
+     * Create a new message instance.
+     */
     public function __construct($comment, $nld)
     {
         $this->comment = $comment;
@@ -32,7 +31,7 @@ class NewCommentNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New comment to the NLD: ' . $this->nld->issue_key,
+            subject: __('New comment for NLD') . ': ' . $this->nld->issue_key,
         );
     }
 
@@ -52,8 +51,6 @@ class NewCommentNotification extends Mailable
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

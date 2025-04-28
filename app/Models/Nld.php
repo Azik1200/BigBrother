@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Nld extends Model
 {
     public $timestamps = false;
+
     protected $fillable = [
         'issue_key',
         'group_id',
@@ -25,14 +28,19 @@ class Nld extends Model
         'done_date',
     ];
 
-    public function comments()
+    /**
+     * Комментарии, связанные с данным NLD.
+     */
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function group()
+    /**
+     * Группа, к которой принадлежит NLD.
+     */
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 }
-

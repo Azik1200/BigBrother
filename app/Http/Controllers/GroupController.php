@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
-
     public function index()
     {
-        $groups = Group::where('deleted_at', null)->get();
+        $groups = Group::whereNull('deleted_at')->get();
+
         return view('groups.index', compact('groups'));
     }
 
@@ -25,31 +25,27 @@ class GroupController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'group_leader' => 'required|exists:users,id', // Проверяем, что лидер группы существует
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'group_leader' => ['required', 'exists:users,id'],
         ]);
 
         $group = Group::create([
-            'name' => $request->input('name'),
-            'user_id' => $user->id,
-            'group_leader' => $request->input('group_leader'),
+            'name' => $validated['name'],
+            'user_id' => Auth::id(),
+            'group_leader' => $validated['group_leader'],
         ]);
 
-        $group->users()->attach($request->input('group_leader'));
+        $group->users()->attach($validated['group_leader']);
 
         return redirect()->route('group')->with('success', 'Группа успешно создана!');
     }
 
     public function delete(Group $group)
     {
-        $user = auth()->user();
-
         $group->update([
             'deleted_at' => now(),
-            'deleted_by' => $user->id,
+            'deleted_by' => Auth::id(),
         ]);
 
         return redirect()->route('group')->with('success', 'Группа успешно удалена!');
@@ -73,12 +69,12 @@ class GroupController extends Controller
 
     public function addMembers(Request $request, Group $group)
     {
-        $request->validate([
-            'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id'
+        $validated = $request->validate([
+            'user_ids' => ['required', 'array'],
+            'user_ids.*' => ['exists:users,id'],
         ]);
 
-        $group->members()->attach($request->user_ids);
+        $group->members()->attach($validated['user_ids']);
 
         return redirect()->route('group.show', $group->id)
             ->with('success', 'Новые участники успешно добавлены в группу!');
@@ -86,12 +82,9 @@ class GroupController extends Controller
 
     public function removeMember(Group $group, User $user)
     {
-        if ($group->group_leader == $user->id) {
-
-            if (!auth()->user()->isAdmin()) {
-                return redirect()->route('group.show', $group->id)
-                    ->with('error', 'Только администратор может удалить руководителя группы!');
-            }
+        if ($group->group_leader == $user->id && !Auth::user()->isAdmin()) {
+            return redirect()->route('group.show', $group->id)
+                ->with('error', 'Только администратор может удалить руководителя группы!');
         }
 
         $group->members()->detach($user->id);
@@ -102,11 +95,8 @@ class GroupController extends Controller
 
     public function myGroups()
     {
-        $user = Auth::user();
-        $groups = $user->groups;
+        $groups = Auth::user()->groups;
 
         return view('groups.my_group', compact('groups'));
     }
-
 }
-

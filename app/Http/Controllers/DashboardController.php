@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -15,19 +13,21 @@ class DashboardController extends Controller
 
         $roles = $user->roles;
         $groups = $user->groups;
-
         $assignedTasks = $user->assignedTasks;
-
-        $createdTasks = Task::where('user_id', $user->id)->get();
-
+        $createdTasks = $user->createdTasks ?? Task::where('user_id', $user->id)->get(); // fallback если нет связи
         $groupIds = $groups->pluck('id');
+
         $groupTasksNoAssignee = Task::whereHas('groups', function ($query) use ($groupIds) {
             $query->whereIn('groups.id', $groupIds);
-        })
-            ->whereDoesntHave('assignees') // Если нет исполнителей
-            ->get();
+        })->whereDoesntHave('assignees')->get();
 
-        return view('dashboard.index', compact('user', 'groups', 'assignedTasks', 'createdTasks', 'groupTasksNoAssignee','roles'));
+        return view('dashboard.index', [
+            'user' => $user,
+            'groups' => $groups,
+            'roles' => $roles,
+            'assignedTasks' => $assignedTasks,
+            'createdTasks' => $createdTasks,
+            'groupTasksNoAssignee' => $groupTasksNoAssignee,
+        ]);
     }
-
 }

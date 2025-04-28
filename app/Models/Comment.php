@@ -3,20 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
-    protected $fillable = ['nld_id', 'comment', 'user_id']; // Заменили task_id на nld_id
+    protected $fillable = [
+        'nld_id',
+        'comment',
+        'user_id',
+    ];
 
-    // Связь с Nld
-    public function nld()
+    /**
+     * Get the NLD associated with the comment.
+     */
+    public function nld(): BelongsTo
     {
-        return $this->belongsTo(Nld::class); // Связь с моделью Nld
+        return $this->belongsTo(Nld::class);
     }
 
-    // Связь с User
-    public function user()
+    /**
+     * Get the user who wrote the comment.
+     */
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class); // Связь с моделью User
+        return $this->belongsTo(User::class);
     }
 }

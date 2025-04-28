@@ -10,43 +10,40 @@ class FileController extends Controller
     public function upload(Request $request)
     {
         $validated = $request->validate([
-            'file' => 'required',
+            'file' => ['required', 'file'],
         ]);
 
-        if ($request->hasFile('file')) {
-            $filePath = $request->file('file')->store('admin/files', 'public');
-            return response()->json([
-                'success' => true,
-                'file_path' => $filePath,
-                'url' => asset('storage/' . $filePath),
-            ]);
-        }
+        $file = $validated['file'];
+
+        $filePath = $file->store('admin/files', 'public');
 
         return response()->json([
-            'success' => false,
-            'message' => 'Файл не найден или не загружен',
-        ], 400);
+            'success' => true,
+            'file_path' => $filePath,
+            'url' => asset('storage/' . $filePath),
+        ]);
     }
 
     public function delete(Request $request)
     {
         $validated = $request->validate([
-            'file_path' => 'required|string',
+            'file_path' => ['required', 'string'],
         ]);
 
         $filePath = $validated['file_path'];
 
-        if (Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        if (!Storage::disk('public')->exists($filePath)) {
             return response()->json([
-                'success' => true,
-                'message' => 'Файл успешно удалён',
-            ]);
+                'success' => false,
+                'message' => 'Файл не найден',
+            ], 404);
         }
 
+        Storage::disk('public')->delete($filePath);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Файл не найден',
-        ], 404);
+            'success' => true,
+            'message' => 'Файл успешно удалён',
+        ]);
     }
 }

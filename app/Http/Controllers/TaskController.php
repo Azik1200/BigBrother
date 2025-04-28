@@ -12,16 +12,12 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $groups = $user->groups;
+        $user = Auth::user();
+        $groupIds = $user->groups->pluck('id');
 
         $assignedTasks = $user->assignedTasks;
-        $createdTasks = Task::where('user_id', $user->id)->get();
-        $groupIds = $groups->pluck('id');
-
-        $unassignedTasks = Task::whereHas('groups', function ($query) use ($groupIds) {
-            $query->whereIn('groups.id', $groupIds);
-        })
+        $createdTasks = $user->createdTasks ?? Task::where('user_id', $user->id)->get();
+        $unassignedTasks = Task::whereHas('groups', fn($q) => $q->whereIn('groups.id', $groupIds))
             ->whereDoesntHave('assignees')
             ->get();
 
@@ -30,9 +26,7 @@ class TaskController extends Controller
 
     public function create()
     {
-        $groups = auth()->user()->groups()->with('leader')->get();
-
-
+        $groups = Auth::user()->groups()->with('leader')->get();
         $users = User::all();
 
         return view('tasks.create', compact('groups', 'users'));
@@ -40,41 +34,41 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|max:255',
-            'description' => 'nullable|min:3|max:1000',
-            'group_ids' => 'required|array',
-            'group_ids.*' => 'exists:groups,id',
-            'priority' => 'required|in:low,medium,high',
-            'status' => 'required|in:pending,in_progress,completed',
-            'due_date' => 'required|date|after:today',
-            'assigned_users' => 'nullable|array',
-            'assigned_users.*' => 'exists:users,id',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'description' => ['nullable', 'string', 'min:3', 'max:1000'],
+            'group_ids' => ['required', 'array'],
+            'group_ids.*' => ['exists:groups,id'],
+            'priority' => ['required', 'in:low,medium,high'],
+            'status' => ['required', 'in:pending,in_progress,completed'],
+            'due_date' => ['required', 'date', 'after:today'],
+            'assigned_users' => ['nullable', 'array'],
+            'assigned_users.*' => ['exists:users,id'],
         ]);
 
         $task = Task::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'priority' => $request->priority,
-            'status' => $request->status,
-            'due_date' => $request->due_date,
-            'user_id' => auth()->id(),
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'priority' => $validated['priority'],
+            'status' => $validated['status'],
+            'due_date' => $validated['due_date'],
+            'user_id' => Auth::id(),
         ]);
 
-        $task->groups()->attach($request->group_ids);
+        $task->groups()->attach($validated['group_ids']);
 
-        if ($request->has('assigned_users')) {
-            $allowedUsers = User::whereIn('id', $request->assigned_users)
-                ->where('group_leader', 0)
-                ->pluck('id')->toArray();
+        if (!empty($validated['assigned_users'])) {
+            $allowedUsers = User::whereIn('id', $validated['assigned_users'])
+                ->where('group_leader', false)
+                ->pluck('id')
+                ->toArray();
 
             $task->users()->attach($allowedUsers);
         }
 
-        $groupLeader = User::where('group_leader', 1)->first();
+        $groupLeader = User::where('group_leader', true)->first();
         if ($groupLeader) {
-            $task->review_by = $groupLeader->id;
-            $task->save();
+            $task->update(['review_by' => $groupLeader->id]);
         }
 
         if ($request->hasFile('files')) {
@@ -87,7 +81,7 @@ class TaskController extends Controller
             }
         }
 
-        return redirect()->route('tasks')->with('success', 'Задача успешно создана.');
+        return redirect()->route('tasks.index')->with('success', 'Задача успешно создана.');
     }
 
     public function show(Task $task)
@@ -104,12 +98,12 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $task->update($request->only('name', 'description', 'is_completed'));
+        $task->update($validated);
 
         return redirect()->route('tasks.index')->with('success', 'Задача успешно обновлена!');
     }
@@ -127,10 +121,10 @@ class TaskController extends Controller
 
         if (!$task->assignees->contains($user->id)) {
             $task->assignees()->attach($user->id);
-            return redirect()->back()->with('success', 'Задача успешно назначена на вас.');
+            return back()->with('success', 'Задача успешно назначена на вас.');
         }
 
-        return redirect()->back()->with('warning', 'Задача уже назначена на вас.');
+        return back()->with('warning', 'Вы уже назначены на эту задачу.');
     }
 
     public function unassignFromMe(Task $task)
@@ -139,10 +133,9 @@ class TaskController extends Controller
 
         if ($task->assignees->contains($user->id)) {
             $task->assignees()->detach($user->id);
-            return redirect()->back()->with('success', 'Вы сняли задачу с себя.');
+            return back()->with('success', 'Вы сняли задачу с себя.');
         }
 
-        return redirect()->back()->with('warning', 'Вы не назначены на эту задачу.');
+        return back()->with('warning', 'Вы не назначены на эту задачу.');
     }
-
 }
