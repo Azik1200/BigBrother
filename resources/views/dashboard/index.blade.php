@@ -6,7 +6,7 @@
         <div class="col-lg-4">
             <!-- Profile Information -->
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-gradient-primary text-white rounded-top">
+                <div class="card-header bg-gradient-primary text-black rounded-top">
                     <h5 class="mb-0">👤 Profile</h5>
                 </div>
                 <div class="card-body">
@@ -17,7 +17,7 @@
 
             <!-- Group Information -->
             <div class="card shadow-sm border-0 mt-4">
-                <div class="card-header bg-gradient-success text-white rounded-top">
+                <div class="card-header bg-gradient-success text-black rounded-top">
                     <h5 class="mb-0">🧑‍🤝‍🧑 Groups</h5>
                 </div>
                 <div class="card-body p-0">
@@ -78,7 +78,7 @@
                 <!-- Tasks without Executor -->
                 <div class="col-md-6">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-gradient-info text-white rounded-top">
+                        <div class="card-header bg-gradient-info text-black rounded-top">
                             <h5 class="mb-0">🕵️‍♂️ Unassigned Tasks</h5>
                         </div>
                         <div class="card-body p-0">
