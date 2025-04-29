@@ -96,10 +96,18 @@
 
                                 <div class="small text-muted">
                                     <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
+                                    <i class="bi bi-people me-1"></i> Group:
+                                    @if ($nld->group)
+                                        <span class="text-dark fw-semibold">{{ $nld->group->name }}</span>
+                                    @else
+                                        <span class="text-muted">No group</span>
+                                    @endif
+                                    |
                                     <i class="bi bi-clipboard-check me-1"></i> Status: {{ $nld->control_status }} |
                                     <i class="bi bi-calendar-check me-1"></i> Updated:
                                     {{ $nld->updated ? Carbon::parse($nld->updated)->format('d.m.Y') : 'No info' }}
                                 </div>
+
                             </div>
 
                             <div class="mt-3 d-flex flex-wrap gap-2">
