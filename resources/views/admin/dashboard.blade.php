@@ -1,45 +1,47 @@
 @extends('layouts.admin')
 
-@section('title', 'Панель администратора')
+@section('title', 'Admin Panel')
 
 @section('content')
-    <div class="container mt-4">
-        <h1 class="mb-4">Welcome to the admin panel</h1>
+    <div class="container my-5">
+        <h1 class="fw-bold mb-4"><i class="bi bi-tools me-2"></i> Admin Panel</h1>
 
-        <!-- Карточки с быстрым доступом -->
-        <div class="row">
-            <!-- Быстрое меню -->
+        <div class="row g-4">
+            <!-- FollowUp -->
             <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-header">FollowUp Management</div>
-                    <div class="card-body">
-                        <h5 class="card-title">Go to FollowUp</h5>
-                        <p class="card-text">Here you can manage FolloUp and view data from the database.</p>
-                        <a href="{{ route('followup') }}" class="btn btn-light">Go to</a>
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-primary text-white rounded-top">
+                        <h5 class="mb-0"><i class="bi bi-clipboard-data-fill me-2"></i> FollowUp Management</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="text-muted">Manage FollowUp entries and analyze submitted data.</p>
+                        <a href="{{ route('admin.followup') }}" class="btn btn-outline-primary w-100 mt-auto">Go to FollowUp</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Пример другой карточки -->
+            <!-- Users -->
             <div class="col-md-4">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-header">Users</div>
-                    <div class="card-body">
-                        <h5 class="card-title">User Management</h5>
-                        <p class="card-text">View, edit and manage users.</p>
-                        <a href="{{ route('admin.users') }}" class="btn btn-light">Go to</a>
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-success text-white rounded-top">
+                        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i> User Management</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="text-muted">Create, update, and manage user accounts and roles.</p>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-success w-100 mt-auto">Manage Users</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Аналитика -->
+            <!-- Analytics -->
             <div class="col-md-4">
-                <div class="card text-white bg-warning mb-3">
-                    <div class="card-header">Analytics</div>
-                    <div class="card-body">
-                        <h5 class="card-title">Reports and statistics</h5>
-                        <p class="card-text">View reports and analytics.</p>
-                        <a href="#" class="btn btn-light">Go to</a>
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark rounded-top">
+                        <h5 class="mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i> Analytics</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="text-muted">View statistical reports, trends and performance indicators.</p>
+                        <a href="#" class="btn btn-outline-warning w-100 mt-auto">View Analytics</a>
                     </div>
                 </div>
             </div>
