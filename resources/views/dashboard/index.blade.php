@@ -5,9 +5,9 @@
         <!-- Left Column -->
         <div class="col-lg-4">
             <!-- Profile Information -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Profile</h5>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-primary text-white rounded-top">
+                    <h5 class="mb-0">👤 Profile</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2"><strong>Name:</strong> {{ $user->name }}</p>
@@ -16,9 +16,9 @@
             </div>
 
             <!-- Group Information -->
-            <div class="card shadow-sm mt-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Groups</h5>
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-gradient-success text-white rounded-top">
+                    <h5 class="mb-0">🧑‍🤝‍🧑 Groups</h5>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -39,9 +39,9 @@
             <div class="row g-4">
                 <!-- Assigned Tasks -->
                 <div class="col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">My Tasks</h5>
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-gradient-warning text-dark rounded-top">
+                            <h5 class="mb-0">✅ My Tasks</h5>
                         </div>
                         <div class="card-body p-0">
                             <ul class="list-group list-group-flush">
@@ -56,12 +56,12 @@
                                         </div>
 
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-outline-primary">
-                                                View Task
+                                            <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-primary">
+                                                View
                                             </a>
                                             <form action="{{ route('tasks.unassign', $task->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <button type="submit" class="btn btn-sm btn-danger">
                                                     Unassign
                                                 </button>
                                             </form>
@@ -77,9 +77,9 @@
 
                 <!-- Tasks without Executor -->
                 <div class="col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-danger text-white">
-                            <h5 class="mb-0">Unassigned Tasks</h5>
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-gradient-info text-white rounded-top">
+                            <h5 class="mb-0">🕵️‍♂️ Unassigned Tasks</h5>
                         </div>
                         <div class="card-body p-0">
                             <ul class="list-group list-group-flush">
@@ -94,12 +94,12 @@
                                         </div>
 
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-outline-primary">
-                                                View Task
+                                            <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-primary">
+                                                View
                                             </a>
                                             <form action="{{ route('tasks.assign', $task->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <button type="submit" class="btn btn-sm btn-success">
                                                     Assign to Me
                                                 </button>
                                             </form>
