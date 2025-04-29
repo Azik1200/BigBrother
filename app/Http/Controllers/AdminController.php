@@ -23,7 +23,7 @@ class AdminController extends Controller
 
     public function userShow(User $user)
     {
-        return view('admin.user', [
+        return view('admin.users.user', [
             'user' => $user,
             'groups' => $user->groups,
             'roles' => $user->roles,
@@ -53,7 +53,7 @@ class AdminController extends Controller
 
         $this->syncRelations($user, $validated);
 
-        return redirect()->route('admin.users')->with('success', 'Пользователь успешно добавлен!');
+        return redirect()->route('admin.users.index')->with('success', 'Пользователь успешно добавлен!');
     }
 
     public function usersEdit(User $user)
@@ -82,7 +82,7 @@ class AdminController extends Controller
 
         $this->syncRelations($user, $validated);
 
-        return redirect()->route('admin.users')->with('success', 'Данные пользователя успешно обновлены!');
+        return redirect()->route('admin.users.index')->with('success', 'Данные пользователя успешно обновлены!');
     }
 
     /**
