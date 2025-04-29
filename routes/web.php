@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
+
     // NLD
     Route::prefix('nld')->name('nld.')->group(function () {
         Route::get('/', [NldController::class, 'index'])->name('index');
