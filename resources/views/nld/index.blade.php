@@ -2,7 +2,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="fw-bold">NLD List</h1>
@@ -32,6 +31,7 @@
                 <div class="col-md-2">
                     <select name="group_id" class="form-select">
                         <option value="">All Groups</option>
+                        <option value="null" @selected(request('group_id') === 'null')>No Group</option>
                         @foreach ($groups as $group)
                             <option value="{{ $group->id }}" @selected(request('group_id') == $group->id)>{{ $group->name }}</option>
                         @endforeach
@@ -44,9 +44,16 @@
                         <option value="0" @selected(request('done') == '0')>In Progress</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">Filter</button>
-                    <a href="{{ route('nld.index') }}" class="btn btn-secondary w-100">Reset</a>
+                <div class="col-md-2">
+                    <select name="per_page" class="form-select">
+                        <option value="10" @selected(request('per_page') == 10)>10 per page</option>
+                        <option value="25" @selected(request('per_page') == 25)>25 per page</option>
+                        <option value="50" @selected(request('per_page') == 50)>50 per page</option>
+                    </select>
+                </div>
+                <div class="col-md-12 d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('nld.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </div>
         </form>
@@ -79,7 +86,9 @@
                         <div class="d-flex justify-content-between align-items-start flex-wrap">
                             <div class="flex-grow-1">
                                 <h5 class="mb-2">
-                                    <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}" target="_blank" class="text-decoration-none text-primary">
+                                    <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}"
+                                       target="_blank"
+                                       class="text-decoration-none text-primary">
                                         {{ $nld->issue_key }}
                                     </a>
                                 </h5>
@@ -129,6 +138,10 @@
                 <p class="text-muted">There are no NLD records available.</p>
             @endforelse
         </div>
-    </div>
 
+        <!-- Pagination -->
+        <div class="mt-4">
+            {{ $nlds->links() }}
+        </div>
+    </div>
 @endsection

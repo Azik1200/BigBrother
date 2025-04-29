@@ -13,11 +13,19 @@ class NldController extends Controller
 {
     public function index(Request $request)
     {
+        $perPage = $request->get('per_page', 10); // сколько на странице
+
         $nlds = Nld::query()
             ->when($request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$request->issue_key}%"))
             ->when($request->filled('reporter_name'), fn($q) => $q->where('reporter_name', 'like', "%{$request->reporter_name}%"))
             ->when($request->filled('issue_type'), fn($q) => $q->where('issue_type', $request->issue_type))
-            ->when($request->filled('group_id'), fn($q) => $q->where('group_id', $request->group_id))
+            ->when($request->filled('group_id'), function ($q) use ($request) {
+                if ($request->group_id === 'null') {
+                    $q->whereNull('group_id');
+                } else {
+                    $q->where('group_id', $request->group_id);
+                }
+            })
             ->when($request->filled('done'), function ($q) use ($request) {
                 if ($request->done == '1') {
                     $q->whereNotNull('done_date');
@@ -26,12 +34,14 @@ class NldController extends Controller
                 }
             })
             ->orderByDesc('add_date')
-            ->get();
+            ->paginate($perPage)
+            ->appends($request->query());
 
         $groups = Group::all();
 
         return view('nld.index', compact('nlds', 'groups'));
     }
+
 
     public function create()
     {
