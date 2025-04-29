@@ -2,20 +2,25 @@
 
 @section('content')
     <div class="container my-5">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="text-center mb-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Title -->
+                <div class="text-center mb-5">
                     <h1 class="fw-bold text-primary">
-                        <i class="bi bi-upload me-2"></i>Upload NLD file
+                        <i class="bi bi-upload me-2"></i> Upload NLD File
                     </h1>
-                    <p class="text-muted">Select Excel file to upload</p>
+                    <p class="text-muted">Please select an Excel file (.xlsx or .xls) to upload and create NLD records.</p>
                 </div>
 
-                <div class="card shadow-lg border-0">
+                <!-- Card Form -->
+                <div class="card shadow-sm border-0">
                     <div class="card-body p-5">
+
                         <form action="{{ route('nld.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
+                            <!-- File Input -->
                             <div class="mb-4">
                                 <label for="nld_file" class="form-label fw-semibold">Select Excel NLD file</label>
                                 <input
@@ -23,39 +28,30 @@
                                     name="nld_file"
                                     id="nld_file"
                                     class="form-control @error('nld_file') is-invalid @enderror"
-                                    required>
+                                    accept=".xlsx, .xls"
+                                    required
+                                >
                                 @error('nld_file')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                                <small class="form-text text-muted">Accepted formats: Excel (xlsx, xls)</small>
-                            </div>
-<!--
-                            <div class="mb-4">
-                                <label for="issue_type" class="form-label fw-semibold">Status</label>
-                                <select name="issue_type" id="issue_type" class="form-select @error('issue_type') is-invalid @enderror" required>
-                                    <option value="" selected disabled>Выберите тип проблемы</option>
-                                    <option value="To Do">To Do</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Done">Done</option>
-                                </select>
-                                @error('issue_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div class="form-text text-muted">Accepted formats: .xlsx, .xls</div>
                             </div>
--->
-                            <div class="d-flex justify-content-between align-items-center">
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mt-4">
                                 <a href="{{ route('nld.index') }}" class="btn btn-outline-secondary">
-                                    <i class="bi bi-arrow-left me-1"></i>Back
+                                    <i class="bi bi-arrow-left me-1"></i> Back
                                 </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-upload me-1"></i>Download and create
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-upload me-1"></i> Upload & Create
                                 </button>
                             </div>
+
                         </form>
+
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

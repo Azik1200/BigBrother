@@ -3,16 +3,17 @@
 
 @section('content')
 
-
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="fw-bold">NLD List</h1>
             @if(auth()->check() && auth()->user()->isAdmin())
-                <a href="{{ route('nld.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>Create NLD
+                <a href="{{ route('nld.create') }}" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-2"></i> Create NLD
                 </a>
             @endif
         </div>
+
+        <!-- Filter Form -->
         <form method="GET" action="{{ route('nld.index') }}" class="mb-4">
             <div class="row g-3">
                 <div class="col-md-2">
@@ -43,85 +44,91 @@
                         <option value="0" @selected(request('done') == '0')>In Progress</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex">
-                    <button type="submit" class="btn btn-primary me-2">Filter</button>
-                    <a href="{{ route('nld.index') }}" class="btn btn-secondary">Reset</a>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    <a href="{{ route('nld.index') }}" class="btn btn-secondary w-100">Reset</a>
                 </div>
             </div>
         </form>
 
-
+        <!-- NLD List -->
         <div class="list-group">
-            @if($nlds->count())
-                @foreach($nlds as $nld)
-                    @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->groups[0]->id == $nld->group_id || auth()->check() && auth()->user()->isAdmin())
-                        @php
-                            $doneDate = $nld->done_date;
-                            $addedDate = $nld->add_date;
-                            $bgClass = '';
+            @forelse($nlds as $nld)
+                @php
+                    $doneDate = $nld->done_date;
+                    $addedDate = $nld->add_date;
+                    $bgClass = '';
 
-                            if ($doneDate) {
-                                $bgClass = 'bg-success bg-opacity-25';
-                            } elseif ($addedDate) {
-                                $daysDiff = \Carbon\Carbon::parse($addedDate)->diffInDays(\Carbon\Carbon::now());
+                    if ($doneDate) {
+                        $bgClass = 'bg-success bg-opacity-25';
+                    } elseif ($addedDate) {
+                        $daysDiff = Carbon::parse($addedDate)->diffInDays(Carbon::now());
 
-                                if ($daysDiff > 5) {
-                                    $bgClass = 'bg-danger bg-opacity-25';
-                                } elseif ($daysDiff > 3) {
-                                    $bgClass = 'bg-warning bg-opacity-25';
-                                }
-                            }
-                        @endphp
+                        if ($daysDiff > 5) {
+                            $bgClass = 'bg-danger bg-opacity-25';
+                        } elseif ($daysDiff > 3) {
+                            $bgClass = 'bg-warning bg-opacity-25';
+                        }
+                    }
 
-                        <div class="list-group-item py-3 {{ $bgClass }}">
-                            <h5 class="mb-1">
-                                <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}"
-                                   target="_blank">
-                                    {{ $nld->issue_key }}
-                                </a>
-                            </h5>
+                    $canView = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->groups->pluck('id')->contains($nld->group_id));
+                @endphp
 
-                            <p class="mb-1 text-muted">{{ Str::limit($nld->description, 100) }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
-                                    <i class="bi"></i> Control Status: {{ $nld->control_status }} |
-                                    <i class="bi bi-calendar-check me-1"></i> Updated:
-                                    @if ($nld->updated)
-                                        {{ \Carbon\Carbon::parse($nld->updated)->format('d.m.Y') }}
-                                    @else
-                                        No info
-                                    @endif
-                                </small>
-                                <div>
-                                    <a href="{{ route('nld.show', $nld) }}" class="btn btn-outline-info btn-sm me-2">
-                                        Read more
+                @if($canView)
+                    <div class="list-group-item py-4 rounded-2 shadow-sm mb-3 {{ $bgClass }}">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-2">
+                                    <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}" target="_blank" class="text-decoration-none text-primary">
+                                        {{ $nld->issue_key }}
                                     </a>
-                                    <form action="{{ route('nld.done', $nld) }}" method="POST"
-                                          style="display:inline-block;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-outline-success btn-sm">Finished</button>
-                                    </form>
-                                    @if(auth()->check() && auth()->user()->isAdmin())
-                                        <a href="{{ route('nld.edit', $nld) }}"
-                                           class="btn btn-outline-warning btn-sm me-2">
-                                            Edit
-                                        </a>
-                                        <form action="" method="POST" style="display:inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                                        </form>
-                                    @endif
+                                </h5>
+                                <p class="text-muted mb-2">{{ Str::limit($nld->description, 100) }}</p>
+
+                                <div class="small text-muted">
+                                    <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
+                                    <i class="bi bi-clipboard-check me-1"></i> Status: {{ $nld->control_status }} |
+                                    <i class="bi bi-calendar-check me-1"></i> Updated:
+                                    {{ $nld->updated ? Carbon::parse($nld->updated)->format('d.m.Y') : 'No info' }}
                                 </div>
                             </div>
+
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <a href="{{ route('nld.show', $nld) }}" class="btn btn-info btn-sm">
+                                    <i class="bi bi-eye me-1"></i> Read More
+                                </a>
+
+                                @if(!$doneDate)
+                                    <form action="{{ route('nld.done', $nld) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="bi bi-check-circle me-1"></i> Mark as Finished
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square me-1"></i> Edit
+                                    </a>
+
+                                    <form action="{{ route('nld.destroy', $nld) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash me-1"></i> Delete
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
-                    @endif
-                @endforeach
-            @else
-                <p class="text-muted">There are no NLD records.</p>
-            @endif
+                    </div>
+                @endif
+            @empty
+                <p class="text-muted">There are no NLD records available.</p>
+            @endforelse
         </div>
     </div>
+
 @endsection

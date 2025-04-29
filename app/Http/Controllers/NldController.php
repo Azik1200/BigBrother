@@ -98,14 +98,14 @@ class NldController extends Controller
             'send_date' => now()->format('Y-m-d'),
         ]);
 
-        return redirect()->route('nld')->with('success', 'Группа NLD успешно обновлена.');
+        return redirect()->route('nld.index')->with('success', 'Группа NLD успешно обновлена.');
     }
 
     public function destroy(Nld $nld)
     {
         $nld->delete();
 
-        return redirect()->route('nlds.index')->with('success', 'NLD запись успешно удалена.');
+        return redirect()->route('nld.index')->with('success', 'NLD запись успешно удалена.');
     }
 
     public function done(Nld $nld)
@@ -114,7 +114,7 @@ class NldController extends Controller
             'done_date' => now()->format('Y-m-d'),
         ]);
 
-        return redirect()->route('nld');
+        return redirect()->route('nld.index');
     }
 
     /**

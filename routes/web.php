@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{nld}', [NldController::class, 'edit'])->name('edit');
         Route::put('/update/{nld}', [NldController::class, 'update'])->name('update');
         Route::put('/{nld}/done', [NldController::class, 'done'])->name('done');
+        Route::delete('/delete/{nld}', [NldController::class, 'destroy'])->name('destroy');
         Route::post('/{nld}/comments', [CommentController::class, 'store'])->name('comments.store');
     });
 
