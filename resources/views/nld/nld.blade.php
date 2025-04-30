@@ -99,6 +99,16 @@
                                 @endif
                             @endauth
 
+                            @if ($nld->done_date)
+                                <form action="{{ route('nld.reopen', $nld) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i> Mark as In Progress
+                                    </button>
+                                </form>
+                            @endif
+
                         </div>
 
 

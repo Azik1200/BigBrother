@@ -180,4 +180,13 @@ class NldController extends Controller
         return redirect()->route('nld.index')->with('error', 'You are not assigned to this NLD.');
     }
 
+    public function reopen(Nld $nld)
+    {
+        if ($nld->done_date) {
+            $nld->update(['done_date' => null]);
+            return redirect()->route('nld.index')->with('success', 'NLD marked as In Progress again.');
+        }
+
+        return redirect()->route('nld.index')->with('info', 'NLD is already in progress.');
+    }
 }
