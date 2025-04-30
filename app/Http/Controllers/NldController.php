@@ -13,7 +13,7 @@ class NldController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('per_page', 10); // сколько на странице
+        $perPage = $request->get('per_page', 10);
 
         $nlds = Nld::query()
             ->when($request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$request->issue_key}%"))
@@ -33,13 +33,23 @@ class NldController extends Controller
                     $q->whereNull('done_date');
                 }
             })
+            ->when($request->filled('parent_issue_status'), fn($q) =>
+            $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"))
             ->orderByDesc('add_date')
             ->paginate($perPage)
             ->appends($request->query());
 
         $groups = Group::all();
+        $parentStatuses = Nld::select('parent_issue_status')
+            ->whereNotNull('parent_issue_status')
+            ->distinct()
+            ->pluck('parent_issue_status');
+        $issueTypes = Nld::select('issue_type')
+            ->whereNotNull('issue_type')
+            ->distinct()
+            ->pluck('issue_type');
 
-        return view('nld.index', compact('nlds', 'groups'));
+        return view('nld.index', compact('nlds', 'groups', 'parentStatuses', 'issueTypes'));
     }
 
 

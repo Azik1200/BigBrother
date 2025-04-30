@@ -24,24 +24,41 @@
                 <div class="col-md-2">
                     <select name="issue_type" class="form-select">
                         <option value="">All Types</option>
-                        <option value="OP-Risk" @selected(request('issue_type') == 'OP-Risk')>OP-Risk</option>
-                        <option value="Incident" @selected(request('issue_type') == 'Incident')>Incident</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select name="group_id" class="form-select">
-                        <option value="">All Groups</option>
-                        <option value="null" @selected(request('group_id') === 'null')>No Group</option>
-                        @foreach ($groups as $group)
-                            <option value="{{ $group->id }}" @selected(request('group_id') == $group->id)>{{ $group->name }}</option>
+                        @foreach($issueTypes as $type)
+                            <option value="{{ $type }}" @selected(request('issue_type') == $type)>{{ $type }}</option>
                         @endforeach
                     </select>
+
                 </div>
+                @if(auth()->user()->isAdmin())
+                    <div class="col-md-2">
+                        <select name="group_id" class="form-select">
+                            <option value="">All Groups</option>
+                            <option value="null" @selected(request('group_id') === 'null')>No Group</option>
+                            @foreach ($groups->where('name', '!=', 'admin') as $group)
+                                <option value="{{ $group->id }}" @selected(request('group_id') == $group->id)>
+                                    {{ $group->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
                 <div class="col-md-2">
                     <select name="done" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="1" @selected(request('done') == '1')>Finished</option>
                         <option value="0" @selected(request('done') == '0')>In Progress</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="parent_issue_status" class="form-select">
+                        <option value="">All Parent Statuses</option>
+                        @foreach($parentStatuses as $status)
+                            <option value="{{ $status }}" @selected(request('parent_issue_status') == $status)>
+                                {{ $status }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -106,6 +123,7 @@
                                     <i class="bi bi-clipboard-check me-1"></i> Status: {{ $nld->control_status }} |
                                     <i class="bi bi-calendar-check me-1"></i> Updated:
                                     {{ $nld->updated ? Carbon::parse($nld->updated)->format('d.m.Y') : 'No info' }}
+                                    | <i class="bi bi-journal-text me-1"></i> Parent Status: {{ $nld->parent_issue_status ?? 'No data' }}
                                 </div>
 
                             </div>
