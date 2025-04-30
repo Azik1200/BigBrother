@@ -85,9 +85,13 @@
                             <a href="{{ route('nld.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left me-1"></i> Back to List
                             </a>
-                            <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning">
-                                <i class="bi bi-pencil-square me-1"></i> Edit NLD
-                            </a>
+                            @auth
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning">
+                                        <i class="bi bi-pencil-square me-1"></i> Edit NLD
+                                    </a>
+                                @endif
+                            @endauth
                             @auth
                                 @if($nld->group_id && auth()->user()->groups->pluck('id')->contains($nld->group_id))
                                     <form action="{{ route('nld.unassign', $nld) }}" method="POST">
