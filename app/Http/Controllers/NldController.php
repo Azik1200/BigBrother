@@ -169,4 +169,15 @@ class NldController extends Controller
             'done_date' => null,
         ];
     }
+
+    public function unassign(Nld $nld)
+    {
+        if (auth()->user()->groups->contains('id', $nld->group_id)) {
+            $nld->update(['group_id' => null]);
+            return redirect()->route('nld.index')->with('success', 'You have been unassigned from this NLD.');
+        }
+
+        return redirect()->route('nld.index')->with('error', 'You are not assigned to this NLD.');
+    }
+
 }

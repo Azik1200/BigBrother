@@ -88,7 +88,19 @@
                             <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning">
                                 <i class="bi bi-pencil-square me-1"></i> Edit NLD
                             </a>
+                            @auth
+                                @if($nld->group_id && auth()->user()->groups->pluck('id')->contains($nld->group_id))
+                                    <form action="{{ route('nld.unassign', $nld) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-person-x me-1"></i> Unassign from Group
+                                        </button>
+                                    </form>
+                                @endif
+                            @endauth
+
                         </div>
+
 
                     </div>
                 </div>
