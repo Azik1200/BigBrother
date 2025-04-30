@@ -101,14 +101,23 @@ class NldController extends Controller
     {
         $validated = $request->validate([
             'group_id' => ['nullable', 'integer'],
+            'parent_issue_status' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $nld->update([
-            'group_id' => $validated['group_id'],
-            'send_date' => now()->format('Y-m-d'),
-        ]);
+        $updateData = [];
 
-        return redirect()->route('nld.index')->with('success', 'Группа NLD успешно обновлена.');
+        if (array_key_exists('group_id', $validated)) {
+            $updateData['group_id'] = $validated['group_id'];
+            $updateData['send_date'] = now()->format('Y-m-d');
+        }
+
+        if (!empty($validated['parent_issue_status'])) {
+            $updateData['parent_issue_status'] = $validated['parent_issue_status'];
+        }
+
+        $nld->update($updateData);
+
+        return redirect()->route('nld.index')->with('success', 'NLD record successfully updated.');
     }
 
     public function destroy(Nld $nld)
