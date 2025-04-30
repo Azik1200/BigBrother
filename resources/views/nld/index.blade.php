@@ -71,6 +71,9 @@
                 <div class="col-md-12 d-flex justify-content-end gap-2">
                     <button type="submit" class="btn btn-primary">Filter</button>
                     <a href="{{ route('nld.index') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('nld.export', request()->query()) }}" class="btn btn-outline-success">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Export to Excel
+                    </a>
                 </div>
             </div>
         </form>

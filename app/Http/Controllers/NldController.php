@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\NldExport;
 
 class NldController extends Controller
 {
@@ -200,4 +201,10 @@ class NldController extends Controller
 
         return redirect()->route('nld.index')->with('info', 'NLD is already in progress.');
     }
+
+    public function export(Request $request)
+    {
+        return Excel::download(new NldExport($request), 'nlds_filtered.xlsx');
+    }
+
 }

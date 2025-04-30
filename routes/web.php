@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/{nld}/done', [NldController::class, 'done'])->name('done');
         Route::post('/{nld}/unassign', [NldController::class, 'unassign'])->name('unassign');
         Route::put('/{nld}/reopen', [NldController::class, 'reopen'])->name('reopen');
+        Route::get('/export', [NldController::class, 'export'])->name('export');
         Route::delete('/delete/{nld}', [NldController::class, 'destroy'])->name('destroy');
         Route::post('/{nld}/comments', [CommentController::class, 'store'])->name('comments.store');
     });
