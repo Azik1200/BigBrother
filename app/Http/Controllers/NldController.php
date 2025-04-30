@@ -96,8 +96,9 @@ class NldController extends Controller
     public function show(Nld $nld)
     {
         $comments = $nld->comments;
+        $doneDate = $nld->done_date;
 
-        return view('nld.nld', compact('nld', 'comments'));
+        return view('nld.nld', compact('nld', 'comments', 'doneDate'));
     }
 
     public function edit(Nld $nld)

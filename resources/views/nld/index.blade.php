@@ -133,16 +133,6 @@
                                     <i class="bi bi-eye me-1"></i> Read More
                                 </a>
 
-                                @if(!$doneDate)
-                                    <form action="{{ route('nld.done', $nld) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="bi bi-check-circle me-1"></i> Mark as Finished
-                                        </button>
-                                    </form>
-                                @endif
-
                                 @if(auth()->user()->isAdmin())
                                     <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil-square me-1"></i> Edit

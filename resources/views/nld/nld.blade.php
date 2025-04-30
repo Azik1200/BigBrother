@@ -99,6 +99,16 @@
                                 @endif
                             @endauth
 
+                            @if(!$doneDate)
+                                <form action="{{ route('nld.done', $nld) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle me-1"></i> Mark as Finished
+                                    </button>
+                                </form>
+                            @endif
+
                             @if ($nld->done_date)
                                 <form action="{{ route('nld.reopen', $nld) }}" method="POST">
                                     @csrf
