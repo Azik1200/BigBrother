@@ -41,7 +41,7 @@
                     </div>
                     <div class="card-body d-flex flex-column justify-content-between">
                         <p class="text-muted">View statistical reports, trends and performance indicators.</p>
-                        <a href="#" class="btn btn-outline-warning w-100 mt-auto">View Analytics</a>
+                        <a href="{{ route('admin.analytics') }}" class="btn btn-outline-warning w-100 mt-auto">View Analytics</a>
                     </div>
                 </div>
             </div>

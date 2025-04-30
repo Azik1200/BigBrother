@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{
+use App\Http\Controllers\{AdminAnalyticsController,
     AdminController,
     AuthController,
     CommentController,
@@ -12,8 +12,7 @@ use App\Http\Controllers\{
     NldController,
     ProcedureController,
     ScriptController,
-    TaskController
-};
+    TaskController};
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -104,6 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->middleware(RoleMiddleware::class . ':admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
+        Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');
 
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [AdminController::class, 'users'])->name('index');
