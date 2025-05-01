@@ -82,23 +82,37 @@
         <div class="list-group">
             @forelse($nlds as $nld)
                 @php
-                    $doneDate = $nld->done_date;
-                    $addedDate = $nld->add_date;
+                    $nldGroups = $nld->groups ?? collect();
+                    $groupIds = $nldGroups->pluck('id')->map(fn($id) => (int)$id)->sort()->values();
+                    $doneGroupIds = $nld->doneStatuses->pluck('group_id')->map(fn($id) => (int)$id)->sort()->values();
+
+                    $isFullyDone = $groupIds->count() > 0 && $groupIds->diff($doneGroupIds)->isEmpty() && $doneGroupIds->diff($groupIds)->isEmpty();
+
                     $bgClass = '';
 
-                    if ($doneDate) {
+                    if ($isFullyDone) {
                         $bgClass = 'bg-success bg-opacity-25';
-                    } elseif ($addedDate) {
-                        $daysDiff = Carbon::parse($addedDate)->diffInDays(Carbon::now());
+                    } elseif ($nld->send_date) {
+                        $daysSinceSend = \Carbon\Carbon::parse($nld->send_date)->diffInDays(now());
 
-                        if ($daysDiff > 5) {
+                        if ($daysSinceSend >= 7) {
                             $bgClass = 'bg-danger bg-opacity-25';
-                        } elseif ($daysDiff > 3) {
+                        } elseif ($daysSinceSend >= 3) {
                             $bgClass = 'bg-warning bg-opacity-25';
+                        } else {
+                            $bgClass = 'bg-light';
+                        }
+                    } elseif ($nld->add_date) {
+                        $daysSinceAdd = \Carbon\Carbon::parse($nld->add_date)->diffInDays(now());
+
+                        if ($daysSinceAdd >= 7) {
+                            $bgClass = 'bg-primary bg-opacity-25';
+                        } elseif ($daysSinceAdd >= 3) {
+                            $bgClass = 'bg-info bg-opacity-25';
+                        } else {
+                            $bgClass = 'bg-light';
                         }
                     }
-
-                    $nldGroups = $nld->groups ?? collect();
                 @endphp
 
                 <div class="list-group-item py-4 rounded-2 shadow-sm mb-3 {{ $bgClass }}">

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('parent_issue_number');
             $table->text('control_status')->nullable();
             $table->date('add_date');
-            $table->date('send_date');
+            $table->date('send_date')->nullable();
         });
     }
 

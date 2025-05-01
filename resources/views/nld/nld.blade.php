@@ -4,10 +4,41 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-10">
+                @php
+                    $allGroupIds = $nld->groups->pluck('id')->sort()->values()->toArray();
+                    $doneGroupIds = $nld->doneStatuses->pluck('group_id')->sort()->values()->toArray();
 
-                <div class="card shadow-lg border-0">
+                    $isFullyDone = !empty($allGroupIds) && $allGroupIds === $doneGroupIds;
+
+                    $bgClass = '';
+
+                    if ($isFullyDone) {
+                        $bgClass = 'bg-success bg-opacity-10';
+                    } elseif ($nld->send_date) {
+                        $daysSinceSend = \Carbon\Carbon::parse($nld->send_date)->diffInDays(now());
+
+                        if ($daysSinceSend >= 7) {
+                            $bgClass = 'bg-danger bg-opacity-10';
+                        } elseif ($daysSinceSend >= 3) {
+                            $bgClass = 'bg-warning bg-opacity-10';
+                        } else {
+                            $bgClass = 'bg-light';
+                        }
+                    } elseif ($nld->add_date) {
+                        $daysSinceAdd = \Carbon\Carbon::parse($nld->add_date)->diffInDays(now());
+
+                        if ($daysSinceAdd >= 7) {
+                            $bgClass = 'bg-primary bg-opacity-10';
+                        } elseif ($daysSinceAdd >= 3) {
+                            $bgClass = 'bg-info bg-opacity-10';
+                        } else {
+                            $bgClass = 'bg-light';
+                        }
+                    }
+                @endphp
+
+                <div class="card shadow-lg border-0 {{ $bgClass }}">
                     <div class="card-body p-5">
-
                         <h1 class="fw-bold text-primary mb-4">
                             <i class="bi bi-info-circle-fill me-2"></i> NLD Details
                         </h1>

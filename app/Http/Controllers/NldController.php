@@ -35,11 +35,31 @@ class NldController extends Controller
                     $query->where('groups.id', $request->group_id));
                 }
             })
-            ->when($request->filled('done'), function ($q) use ($request) {
+            ->when($request->filled('done'), function ($q) use ($request, $isAdmin, $user) {
                 if ($request->done == '1') {
-                    $q->whereNotNull('done_date');
+                    // Задачи, у которых ВСЕ группы завершили задачу
+                    $q->whereHas('groups', function ($subQ) {
+                        $subQ->whereDoesntHave('nlds', function ($q2) {
+                            $q2->whereColumn('nld_id', 'nlds.id')
+                                ->whereNotIn('group_id', function ($subSub) {
+                                    $subSub->select('group_id')
+                                        ->from('nld_done_statuses')
+                                        ->whereColumn('nld_id', 'nlds.id');
+                                });
+                        });
+                    });
                 } elseif ($request->done == '0') {
-                    $q->whereNull('done_date');
+                    // Задачи, где хоть одна группа ещё не сделала done
+                    $q->whereHas('groups', function ($subQ) {
+                        $subQ->whereHas('nlds', function ($q2) {
+                            $q2->whereColumn('nld_id', 'nlds.id')
+                                ->whereNotIn('group_id', function ($subSub) {
+                                    $subSub->select('group_id')
+                                        ->from('nld_done_statuses')
+                                        ->whereColumn('nld_id', 'nlds.id');
+                                });
+                        });
+                    });
                 }
             })
             ->when($request->filled('parent_issue_status'), fn($q) =>
@@ -202,8 +222,7 @@ class NldController extends Controller
             'parent_issue_number' => $row[9] ?? '',
             'control_status' => 'To Do',
             'add_date' => now()->format('Y-m-d'),
-            'send_date' => now()->format('Y-m-d'),
-            'done_date' => null,
+            'send_date' => null,
         ];
     }
 
@@ -212,14 +231,12 @@ class NldController extends Controller
         $user = auth()->user();
         $userGroupIds = $user->groups->pluck('id')->toArray();
 
-        // Найдём общие группы между пользователем и задачей
         $intersectingGroupIds = $nld->groups()
             ->whereIn('groups.id', $userGroupIds)
             ->pluck('groups.id')
             ->toArray();
 
         if (!empty($intersectingGroupIds)) {
-            // Отвязываем только группы пользователя
             $nld->groups()->detach($intersectingGroupIds);
 
             return redirect()->route('nld.index')
@@ -236,7 +253,6 @@ class NldController extends Controller
             'group_id' => ['required', 'exists:groups,id'],
         ]);
 
-        // Удаляем doneStatus для указанной группы
         $nld->doneStatuses()
             ->where('group_id', $request->group_id)
             ->delete();
