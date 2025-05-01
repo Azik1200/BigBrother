@@ -116,9 +116,12 @@
 
                                 <div class="small text-muted">
                                     <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
-                                    <i class="bi bi-people me-1"></i> Group:
-                                    @if ($nld->group)
-                                        <span class="text-dark fw-semibold">{{ $nld->group->name }}</span>
+                                    <i class="bi bi-people me-1"></i> Groups:
+                                    @php $nldGroups = $nld->groups ?? collect(); @endphp
+                                    @if ($nldGroups->isNotEmpty())
+                                        @foreach($nldGroups->where('name', '!=', 'admin') as $group)
+                                            <span class="badge bg-secondary me-1">{{ $group->name }}</span>
+                                        @endforeach
                                     @else
                                         <span class="text-muted">No group</span>
                                     @endif

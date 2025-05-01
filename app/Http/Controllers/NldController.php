@@ -22,9 +22,9 @@ class NldController extends Controller
             ->when($request->filled('issue_type'), fn($q) => $q->where('issue_type', $request->issue_type))
             ->when($request->filled('group_id'), function ($q) use ($request) {
                 if ($request->group_id === 'null') {
-                    $q->whereNull('group_id');
+                    $q->whereDoesntHave('groups');
                 } else {
-                    $q->where('group_id', $request->group_id);
+                    $q->whereHas('groups', fn($query) => $query->where('groups.id', $request->group_id));
                 }
             })
             ->when($request->filled('done'), function ($q) use ($request) {
@@ -105,29 +105,30 @@ class NldController extends Controller
     public function edit(Nld $nld)
     {
         $groups = Group::select('id', 'name')->get();
+        $selectedGroupIds = $nld->groups()->pluck('group_id')->toArray();
 
-        return view('nld.edit', compact('nld', 'groups'));
+        return view('nld.edit', compact('nld', 'groups', 'selectedGroupIds'));
     }
 
     public function update(Request $request, Nld $nld)
     {
         $validated = $request->validate([
-            'group_id' => ['nullable', 'integer'],
+            'group_ids' => ['nullable', 'array'],
+            'group_ids.*' => ['integer', 'exists:groups,id'],
             'parent_issue_status' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $updateData = [];
-
-        if (array_key_exists('group_id', $validated)) {
-            $updateData['group_id'] = $validated['group_id'];
-            $updateData['send_date'] = now()->format('Y-m-d');
-        }
-
         if (!empty($validated['parent_issue_status'])) {
-            $updateData['parent_issue_status'] = $validated['parent_issue_status'];
+            $nld->parent_issue_status = $validated['parent_issue_status'];
         }
 
-        $nld->update($updateData);
+        $nld->save();
+
+        if (isset($validated['group_ids'])) {
+            $nld->groups()->sync($validated['group_ids']);
+            $nld->send_date = now()->format('Y-m-d');
+            $nld->save();
+        }
 
         return redirect()->route('nld.index')->with('success', 'NLD record successfully updated.');
     }
@@ -165,7 +166,6 @@ class NldController extends Controller
 
         return [
             'issue_key' => $row[0] ?? null,
-            'group_id' => null,
             'summary' => isset($row[1]) ? str_replace('_x000D_', "\n", $row[1]) : '',
             'description' => isset($row[2]) ? str_replace('_x000D_', "\n", $row[2]) : '-',
             'reporter_name' => $row[3] ?? '',

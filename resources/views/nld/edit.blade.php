@@ -58,17 +58,34 @@
 
                             <!-- Editable: Group -->
                             <div class="mb-4">
-                                <label for="group_id" class="form-label fw-semibold">Reassign Group:</label>
-                                <select name="group_id" id="group_id" class="form-select @error('group_id') is-invalid @enderror">
-                                    <option value="" disabled selected>Select a group</option>
-                                    @foreach ($groups as $group)
-                                        <option value="{{ $group->id }}" {{ old('group_id', $nld->group_id) == $group->id ? 'selected' : '' }}>
-                                            {{ $group->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('group_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <label class="form-label fw-semibold text-secondary">
+                                    <i class="bi bi-people-fill me-1"></i> Reassign Groups:
+                                </label>
+
+                                <div class="p-3 border rounded shadow-sm bg-light">
+                                    <div class="row">
+                                        @foreach ($groups->where('name', '!=', 'admin') as $group)
+                                            <div class="col-md-6 mb-2">
+                                                <div class="form-check">
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="group_ids[]"
+                                                        value="{{ $group->id }}"
+                                                        id="group_{{ $group->id }}"
+                                                        {{ in_array($group->id, $selectedGroupIds ?? []) ? 'checked' : '' }}
+                                                    >
+                                                    <label class="form-check-label" for="group_{{ $group->id }}">
+                                                        {{ $group->name }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                @error('group_ids')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
 

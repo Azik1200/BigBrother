@@ -17,7 +17,9 @@
                                 'Issue Key' => "<a href='https://jira-support.kapitalbank.az/browse/{$nld->issue_key}' target='_blank'>{$nld->issue_key}</a>",
                                 'Summary' => $nld->summary ?? 'No summary',
                                 'Description' => nl2br(e($nld->description ?? 'No description')),
-                                'Group' => $nld->group->name ?? 'No group',
+                                'Groups' => $nld->groups->where('name', '!=', 'admin')->isNotEmpty()
+    ? $nld->groups->where('name', '!=', 'admin')->pluck('name')->join(', ')
+    : 'No groups',
                                 'Reporter' => $nld->reporter_name,
                                 'Issue Type' => $nld->issue_type,
                                 'Updated Date' => $nld->updated ? \Carbon\Carbon::parse($nld->updated)->format('d.m.Y') : 'No info',

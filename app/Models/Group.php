@@ -59,4 +59,9 @@ class Group extends Model
     {
         return $this->belongsTo(User::class, 'group_leader');
     }
+
+    public function nlds()
+    {
+        return $this->belongsToMany(Nld::class, 'group_nld');
+    }
 }
