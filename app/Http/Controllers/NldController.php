@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Nld;
+use App\Models\NldGroupStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,15 +17,22 @@ class NldController extends Controller
     {
         $perPage = $request->get('per_page', 10);
 
-        $nldsQuery = Nld::with('groups')
-            ->when($request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$request->issue_key}%"))
-            ->when($request->filled('reporter_name'), fn($q) => $q->where('reporter_name', 'like', "%{$request->reporter_name}%"))
-            ->when($request->filled('issue_type'), fn($q) => $q->where('issue_type', $request->issue_type))
+        $user = auth()->user();
+        $isAdmin = $user->isAdmin();
+
+        $nldsQuery = Nld::with(['groups', 'doneStatuses.group'])
+            ->when($request->filled('issue_key'), fn($q) =>
+            $q->where('issue_key', 'like', "%{$request->issue_key}%"))
+            ->when($request->filled('reporter_name'), fn($q) =>
+            $q->where('reporter_name', 'like', "%{$request->reporter_name}%"))
+            ->when($request->filled('issue_type'), fn($q) =>
+            $q->where('issue_type', $request->issue_type))
             ->when($request->filled('group_id'), function ($q) use ($request) {
                 if ($request->group_id === 'null') {
                     $q->whereDoesntHave('groups');
                 } else {
-                    $q->whereHas('groups', fn($query) => $query->where('groups.id', $request->group_id));
+                    $q->whereHas('groups', fn($query) =>
+                    $query->where('groups.id', $request->group_id));
                 }
             })
             ->when($request->filled('done'), function ($q) use ($request) {
@@ -37,10 +45,14 @@ class NldController extends Controller
             ->when($request->filled('parent_issue_status'), fn($q) =>
             $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"));
 
-        // Показываем только задачи пользователя, если он не админ
-        if (!auth()->user()->isAdmin()) {
-            $userGroupIds = auth()->user()->groups->pluck('id');
-            $nldsQuery->whereHas('groups', fn($q) => $q->whereIn('groups.id', $userGroupIds));
+        if (!$isAdmin) {
+            $userGroupIds = $user->groups->pluck('id');
+
+            $nldsQuery->whereHas('groups', fn($q) =>
+            $q->whereIn('groups.id', $userGroupIds))
+                ->whereDoesntHave('doneStatuses', function ($query) use ($userGroupIds) {
+                    $query->whereIn('group_id', $userGroupIds);
+                });
         }
 
         $nlds = $nldsQuery->orderByDesc('add_date')
@@ -105,9 +117,9 @@ class NldController extends Controller
     public function show(Nld $nld)
     {
         $comments = $nld->comments;
-        $doneDate = $nld->done_date;
+        $nld->load(['comments.user', 'groups', 'doneStatuses.group']);
 
-        return view('nld.nld', compact('nld', 'comments', 'doneDate'));
+        return view('nld.nld', compact('nld', 'comments'));
     }
 
     public function edit(Nld $nld)
@@ -150,11 +162,16 @@ class NldController extends Controller
 
     public function done(Nld $nld)
     {
-        $nld->update([
-            'done_date' => now()->format('Y-m-d'),
-        ]);
+        $user = auth()->user();
 
-        return redirect()->route('nld.index');
+        foreach ($user->groups as $group) {
+            NldGroupStatus::updateOrCreate(
+                ['nld_id' => $nld->id, 'group_id' => $group->id],
+                ['done_at' => now()]
+            );
+        }
+
+        return back()->with('success', 'Marked as finished for your group.');
     }
 
     /**
@@ -192,23 +209,42 @@ class NldController extends Controller
 
     public function unassign(Nld $nld)
     {
-        if (auth()->user()->groups->contains('id', $nld->group_id)) {
-            $nld->update(['group_id' => null]);
-            return redirect()->route('nld.index')->with('success', 'You have been unassigned from this NLD.');
+        $user = auth()->user();
+        $userGroupIds = $user->groups->pluck('id')->toArray();
+
+        // Найдём общие группы между пользователем и задачей
+        $intersectingGroupIds = $nld->groups()
+            ->whereIn('groups.id', $userGroupIds)
+            ->pluck('groups.id')
+            ->toArray();
+
+        if (!empty($intersectingGroupIds)) {
+            // Отвязываем только группы пользователя
+            $nld->groups()->detach($intersectingGroupIds);
+
+            return redirect()->route('nld.index')
+                ->with('success', 'You have been unassigned from this NLD.');
         }
 
-        return redirect()->route('nld.index')->with('error', 'You are not assigned to this NLD.');
+        return redirect()->route('nld.index')
+            ->with('error', 'You are not assigned to this NLD.');
     }
 
-    public function reopen(Nld $nld)
+    public function reopen(Request $request, Nld $nld)
     {
-        if ($nld->done_date) {
-            $nld->update(['done_date' => null]);
-            return redirect()->route('nld.index')->with('success', 'NLD marked as In Progress again.');
-        }
+        $request->validate([
+            'group_id' => ['required', 'exists:groups,id'],
+        ]);
 
-        return redirect()->route('nld.index')->with('info', 'NLD is already in progress.');
+        // Удаляем doneStatus для указанной группы
+        $nld->doneStatuses()
+            ->where('group_id', $request->group_id)
+            ->delete();
+
+        return redirect()->route('nld.index')
+            ->with('success', 'NLD has been marked as in progress again for the selected group.');
     }
+
 
     public function export(Request $request)
     {

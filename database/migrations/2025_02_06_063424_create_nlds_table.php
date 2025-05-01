@@ -26,7 +26,6 @@ return new class extends Migration
             $table->text('control_status')->nullable();
             $table->date('add_date');
             $table->date('send_date');
-            $table->date('done_date')->nullable();
         });
     }
 

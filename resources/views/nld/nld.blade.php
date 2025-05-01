@@ -30,7 +30,12 @@
                                 'Control Status' => $nld->control_status ?? 'No data',
                                 'Adding Date' => $nld->add_date ? \Carbon\Carbon::parse($nld->add_date)->format('d.m.Y') : 'No info',
                                 'Sending Date' => $nld->send_date ? \Carbon\Carbon::parse($nld->send_date)->format('d.m.Y') : 'No info',
-                                'Done Date' => $nld->done_date ? \Carbon\Carbon::parse($nld->done_date)->format('d.m.Y') : 'No info',
+                                'Done By Groups' => $nld->doneStatuses->isNotEmpty()
+    ? $nld->doneStatuses->map(fn($status) =>
+        "{$status->group->name} on " .
+        \Carbon\Carbon::parse($status->done_at)->format('d.m.Y H:i')
+    )->join('<br>')
+    : 'No group has completed this task',
                             ] as $label => $value)
                                 <div class="col-md-6 mb-4">
                                     <div class="border rounded p-3 bg-light h-100">
@@ -95,7 +100,7 @@
                                 @endif
                             @endauth
                             @auth
-                                @if($nld->group_id && auth()->user()->groups->pluck('id')->contains($nld->group_id))
+                                @if($nld->groups->pluck('id')->intersect(auth()->user()->groups->pluck('id'))->isNotEmpty())
                                     <form action="{{ route('nld.unassign', $nld) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-danger">
@@ -105,17 +110,13 @@
                                 @endif
                             @endauth
 
-                            @if(!$doneDate)
-                                <form action="{{ route('nld.done', $nld) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-check-circle me-1"></i> Mark as Finished
-                                    </button>
-                                </form>
+                            @if ($nld->doneStatuses->isNotEmpty())
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reopenModal">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reopen for Group
+                                </button>
                             @endif
 
-                            @if ($nld->done_date)
+                        @if ($nld->done_date)
                                 <form action="{{ route('nld.reopen', $nld) }}" method="POST">
                                     @csrf
                                     @method('PUT')
@@ -124,13 +125,63 @@
                                     </button>
                                 </form>
                             @endif
+                            @auth
+                                @php
+                                    $userGroupIds = auth()->user()->groups->pluck('id')->toArray();
+                                    $nldGroupIds = $nld->groups->pluck('id')->toArray();
+                                    $doneGroupIds = $nld->doneStatuses->pluck('group_id')->toArray();
 
+                                    $eligibleGroupIds = array_diff(
+                                        array_intersect($userGroupIds, $nldGroupIds),
+                                        $doneGroupIds
+                                    );
+                                @endphp
+
+                                @if (!empty($eligibleGroupIds))
+                                    <form action="{{ route('nld.done', $nld) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-check-circle me-1"></i> Mark as Finished
+                                        </button>
+                                    </form>
+                                @endif
+                            @endauth
                         </div>
-
-
                     </div>
                 </div>
             </div>
         </div>
+
+        @if ($nld->doneStatuses->isNotEmpty())
+            <!-- Reopen Modal -->
+            <div class="modal fade" id="reopenModal" tabindex="-1" aria-labelledby="reopenModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ route('nld.reopen', $nld) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reopenModalLabel">Reopen Task for Group</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="group_id" class="form-label">Select Group to Reopen</label>
+                                <select name="group_id" id="group_id" class="form-select" required>
+                                    @foreach($nld->doneStatuses as $status)
+                                        <option value="{{ $status->group_id }}">
+                                            {{ $status->group->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">Reopen Task</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
     </div>
 @endsection

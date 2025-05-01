@@ -48,4 +48,9 @@ class Nld extends Model
     {
         return $this->belongsToMany(Group::class, 'group_nld');
     }
+
+    public function doneStatuses()
+    {
+        return $this->hasMany(NldGroupStatus::class);
+    }
 }
