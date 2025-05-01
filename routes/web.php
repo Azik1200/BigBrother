@@ -3,6 +3,7 @@
 use App\Http\Controllers\{AdminAnalyticsController,
     AdminController,
     AuthController,
+    BackUpController,
     CommentController,
     DashboardController,
     ExcelController,
@@ -104,6 +105,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/followup', [FollowUpController::class, 'index'])->name('followup');
         Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');
+
+        Route::prefix('/backup')->name('backups.')->group(function () {
+            Route::get('/', [BackUpController::class, 'index'])->name('index');
+            Route::post('/create', [BackUpController::class, 'create'])->name('create');
+            Route::get('/download/{file}', [BackUpController::class, 'download'])->name('download');
+        });
 
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [AdminController::class, 'users'])->name('index');

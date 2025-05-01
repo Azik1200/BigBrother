@@ -45,6 +45,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Backups -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-dark text-white rounded-top">
+                        <h5 class="mb-0"><i class="bi bi-hdd-fill me-2"></i> Backups</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="text-muted">View and manage database backups.</p>
+                        <a href="{{ route('admin.backups.index') }}" class="btn btn-outline-dark w-100 mt-auto">Manage Backups</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
