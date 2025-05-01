@@ -38,7 +38,7 @@ class BackUpController extends Controller
         $username = $db['username'];
         $password = $db['password'];
         $database = $db['database'];
-        $dumpPath = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
+        $dumpPath = config('backup.dump_path');
         $backupPath = storage_path('app/backups/backup_' . now()->format('Y_m_d_His') . '.sql');
 
         // Формируем команду
@@ -55,6 +55,6 @@ class BackUpController extends Controller
             ], 500);
         }
 
-        return redirect(route('admin.backups.index'));
+        return redirect(route('admin.backups.index'))->with('success', 'Backup created successfully');
     }
 }
