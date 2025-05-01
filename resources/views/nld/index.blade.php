@@ -98,64 +98,61 @@
                         }
                     }
 
-                    $canView = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->groups->pluck('id')->contains($nld->group_id));
+                    $nldGroups = $nld->groups ?? collect();
                 @endphp
 
-                @if($canView)
-                    <div class="list-group-item py-4 rounded-2 shadow-sm mb-3 {{ $bgClass }}">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap">
-                            <div class="flex-grow-1">
-                                <h5 class="mb-2">
-                                    <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}"
-                                       target="_blank"
-                                       class="text-decoration-none text-primary">
-                                        {{ $nld->issue_key }}
-                                    </a>
-                                </h5>
-                                <p class="text-muted mb-2">{{ Str::limit($nld->description, 100) }}</p>
-
-                                <div class="small text-muted">
-                                    <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
-                                    <i class="bi bi-people me-1"></i> Groups:
-                                    @php $nldGroups = $nld->groups ?? collect(); @endphp
-                                    @if ($nldGroups->isNotEmpty())
-                                        @foreach($nldGroups->where('name', '!=', 'admin') as $group)
-                                            <span class="badge bg-secondary me-1">{{ $group->name }}</span>
-                                        @endforeach
-                                    @else
-                                        <span class="text-muted">No group</span>
-                                    @endif
-                                    |
-                                    <i class="bi bi-clipboard-check me-1"></i> Status: {{ $nld->control_status }} |
-                                    <i class="bi bi-calendar-check me-1"></i> Updated:
-                                    {{ $nld->updated ? Carbon::parse($nld->updated)->format('d.m.Y') : 'No info' }}
-                                    | <i class="bi bi-journal-text me-1"></i> Parent Status: {{ $nld->parent_issue_status ?? 'No data' }}
-                                </div>
-
-                            </div>
-
-                            <div class="mt-3 d-flex flex-wrap gap-2">
-                                <a href="{{ route('nld.show', $nld) }}" class="btn btn-info btn-sm">
-                                    <i class="bi bi-eye me-1"></i> Read More
+                <div class="list-group-item py-4 rounded-2 shadow-sm mb-3 {{ $bgClass }}">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-2">
+                                <a href="https://jira-support.kapitalbank.az/browse/{{ $nld->issue_key }}"
+                                   target="_blank"
+                                   class="text-decoration-none text-primary">
+                                    {{ $nld->issue_key }}
                                 </a>
+                            </h5>
+                            <p class="text-muted mb-2">{{ Str::limit($nld->description, 100) }}</p>
 
-                                @if(auth()->user()->isAdmin())
-                                    <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil-square me-1"></i> Edit
-                                    </a>
-
-                                    <form action="{{ route('nld.destroy', $nld) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="bi bi-trash me-1"></i> Delete
-                                        </button>
-                                    </form>
+                            <div class="small text-muted">
+                                <i class="bi bi-person-fill me-1"></i> Reporter: {{ $nld->reporter_name }} |
+                                <i class="bi bi-people me-1"></i> Groups:
+                                @if ($nldGroups->isNotEmpty())
+                                    @foreach($nldGroups->where('name', '!=', 'admin') as $group)
+                                        <span class="badge bg-secondary me-1">{{ $group->name }}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">No group</span>
                                 @endif
+                                |
+                                <i class="bi bi-clipboard-check me-1"></i> Status: {{ $nld->control_status }} |
+                                <i class="bi bi-calendar-check me-1"></i> Updated:
+                                {{ $nld->updated ? Carbon::parse($nld->updated)->format('d.m.Y') : 'No info' }}
+                                |
+                                <i class="bi bi-journal-text me-1"></i> Parent Status: {{ $nld->parent_issue_status ?? 'No data' }}
                             </div>
                         </div>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a href="{{ route('nld.show', $nld) }}" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye me-1"></i> Read More
+                            </a>
+
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('nld.edit', $nld) }}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                                </a>
+
+                                <form action="{{ route('nld.destroy', $nld) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash me-1"></i> Delete
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
-                @endif
+                </div>
             @empty
                 <p class="text-muted">There are no NLD records available.</p>
             @endforelse

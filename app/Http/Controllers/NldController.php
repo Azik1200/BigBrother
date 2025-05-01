@@ -16,7 +16,7 @@ class NldController extends Controller
     {
         $perPage = $request->get('per_page', 10);
 
-        $nlds = Nld::query()
+        $nldsQuery = Nld::with('groups')
             ->when($request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$request->issue_key}%"))
             ->when($request->filled('reporter_name'), fn($q) => $q->where('reporter_name', 'like', "%{$request->reporter_name}%"))
             ->when($request->filled('issue_type'), fn($q) => $q->where('issue_type', $request->issue_type))
@@ -35,16 +35,25 @@ class NldController extends Controller
                 }
             })
             ->when($request->filled('parent_issue_status'), fn($q) =>
-            $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"))
-            ->orderByDesc('add_date')
+            $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"));
+
+        // Показываем только задачи пользователя, если он не админ
+        if (!auth()->user()->isAdmin()) {
+            $userGroupIds = auth()->user()->groups->pluck('id');
+            $nldsQuery->whereHas('groups', fn($q) => $q->whereIn('groups.id', $userGroupIds));
+        }
+
+        $nlds = $nldsQuery->orderByDesc('add_date')
             ->paginate($perPage)
             ->appends($request->query());
 
-        $groups = Group::all();
+        $groups = Group::where('name', '!=', 'admin')->get();
+
         $parentStatuses = Nld::select('parent_issue_status')
             ->whereNotNull('parent_issue_status')
             ->distinct()
             ->pluck('parent_issue_status');
+
         $issueTypes = Nld::select('issue_type')
             ->whereNotNull('issue_type')
             ->distinct()
@@ -52,7 +61,6 @@ class NldController extends Controller
 
         return view('nld.index', compact('nlds', 'groups', 'parentStatuses', 'issueTypes'));
     }
-
 
     public function create()
     {
