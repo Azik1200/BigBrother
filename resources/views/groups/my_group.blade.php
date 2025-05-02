@@ -19,7 +19,7 @@
                                 <h5 class="card-title text-dark fw-semibold">
                                     <i class="bi bi-people me-2"></i> {{ $group->name }}
                                 </h5>
-                                <a href="{{ route('group.show', $group->id) }}" class="btn btn-outline-primary mt-3">
+                                <a href="{{ route('group.list', $group->id) }}" class="btn btn-outline-primary mt-3">
                                     <i class="bi bi-box-arrow-in-right me-1"></i> View Group
                                 </a>
                             </div>

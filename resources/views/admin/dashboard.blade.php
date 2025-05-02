@@ -58,6 +58,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Group Management -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-info text-white rounded-top">
+                        <h5 class="mb-0"><i class="bi bi-collection-fill me-2"></i> Group Management</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="text-muted">Create, edit and manage groups and their members.</p>
+                        <a href="{{ route('admin.groups.index') }}" class="btn btn-outline-info w-100 mt-auto">Manage Groups</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 @endsection

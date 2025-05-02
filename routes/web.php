@@ -73,31 +73,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [ScriptController::class, 'store'])->name('store');
     });
 
-    // Groups (open part)
     Route::prefix('groups')->name('group.')->group(function () {
         Route::get('/list', [GroupController::class, 'myGroups'])->name('list');
-
-        // Groups (admin only)
-        Route::middleware(RoleMiddleware::class . ':admin')->group(function () {
-            Route::get('/', [GroupController::class, 'index'])->name('index');
-            Route::get('/create', [GroupController::class, 'create'])->name('create');
-            Route::post('/', [GroupController::class, 'store'])->name('store');
-
-            Route::prefix('files')->name('files.')->group(function () {
-                Route::post('/upload', [FileController::class, 'upload'])->name('upload');
-                Route::delete('/delete', [FileController::class, 'delete'])->name('delete');
-            });
-
-            Route::prefix('{group}')->group(function () {
-                Route::get('/', [GroupController::class, 'show'])->name('show');
-                Route::get('/edit', [GroupController::class, 'edit'])->name('edit');
-                Route::put('/', [GroupController::class, 'update'])->name('update');
-                Route::put('/delete', [GroupController::class, 'delete'])->name('delete');
-                Route::get('/add-members', [GroupController::class, 'addMembersForm'])->name('add_members');
-                Route::post('/add-members', [GroupController::class, 'addMembers'])->name('store_members');
-                Route::delete('/members/{user}', [GroupController::class, 'removeMember'])->name('remove_member');
-            });
-        });
     });
 
     // Admin
@@ -119,6 +96,17 @@ Route::middleware('auth')->group(function () {
             Route::get('/{user}', [AdminController::class, 'userShow'])->name('show');
             Route::get('/{user}/edit', [AdminController::class, 'usersEdit'])->name('edit');
             Route::put('/{user}', [AdminController::class, 'usersUpdate'])->name('update');
+        });
+
+        Route::prefix('groups')->name('groups.')->group(function () {
+           Route::get('/', [GroupController::class, 'indexAdmin'])->name('index');
+           Route::get('/create', [GroupController::class, 'create'])->name('create');
+           Route::get('/{group}', [GroupController::class, 'show'])->name('show');
+           Route::delete('/{group}', [GroupController::class, 'delete'])->name('delete');
+           Route::post('/store', [GroupController::class, 'store'])->name('store');
+           Route::get('/{group}/edit', [GroupController::class, 'addMembersForm'])->name('addMembersForm');
+           Route::post('/{group}/edit', [GroupController::class, 'addMembers'])->name('addMembers');
+           Route::delete('/{group}/removeMember', [GroupController::class, 'removeMember'])->name('removeMember');
         });
     });
 });

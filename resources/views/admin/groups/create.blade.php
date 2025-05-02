@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Group Managment')
 
 @section('content')
     <div class="container my-5">
@@ -12,7 +14,7 @@
                             <i class="bi bi-people-fill me-2"></i> Create a Group
                         </h1>
 
-                        <form action="{{ route('group.store') }}" method="POST">
+                        <form action="{{ route('admin.groups.store') }}" method="POST">
                             @csrf
 
                             <!-- Group Name -->
@@ -53,7 +55,7 @@
 
                             <!-- Buttons -->
                             <div class="d-flex justify-content-between">
-                                <a href="{{ route('group') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('admin.groups.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i> Back
                                 </a>
                                 <button type="submit" class="btn btn-success">

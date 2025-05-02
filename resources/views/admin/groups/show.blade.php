@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Group Management')
+
 @section('content')
     <div class="container my-5">
         <div class="row justify-content-center">
@@ -34,7 +36,7 @@
                                         </div>
 
                                         <form
-                                            action="{{ route('group.remove_member', ['group' => $group->id, 'user' => $member->id]) }}"
+                                            action="{{ route('admin.groups.removeMember', ['group' => $group->id, 'user' => $member->id]) }}"
                                             method="POST"
                                             onsubmit="return confirm('Are you sure you want to remove {{ $member->name }} from the group?');">
                                             @csrf
@@ -49,10 +51,10 @@
                         @endif
 
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ route('group.add_members', $group->id) }}" class="btn btn-success">
+                            <a href="{{ route('admin.groups.addMembers', $group->id) }}" class="btn btn-success">
                                 <i class="bi bi-person-plus-fill me-1"></i> Add Participants
                             </a>
-                            <a href="{{ route('group') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('admin.groups.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left-circle me-2"></i> Back to Group List
                             </a>
                         </div>
