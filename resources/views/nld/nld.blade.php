@@ -131,7 +131,16 @@
                                 @endif
                             @endauth
                             @auth
-                                @if($nld->groups->pluck('id')->intersect(auth()->user()->groups->pluck('id'))->isNotEmpty())
+                                @php
+                                    $userGroupIds = auth()->user()->groups->pluck('id');
+                                    $assignedGroupIds = $nld->groups->pluck('id');
+                                    $doneGroupIds = $nld->doneStatuses->pluck('group_id');
+
+                                    $isFullyDone = $assignedGroupIds->count() > 0 &&
+                                                   $assignedGroupIds->diff($doneGroupIds)->isEmpty();
+                                @endphp
+
+                                @if(!$isFullyDone && $assignedGroupIds->intersect($userGroupIds)->isNotEmpty())
                                     <form action="{{ route('nld.unassign', $nld) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-danger">
@@ -141,7 +150,8 @@
                                 @endif
                             @endauth
 
-                            @if ($nld->doneStatuses->isNotEmpty())
+
+                        @if ($nld->doneStatuses->isNotEmpty())
                                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reopenModal">
                                     <i class="bi bi-arrow-counterclockwise me-1"></i> Reopen for Group
                                 </button>

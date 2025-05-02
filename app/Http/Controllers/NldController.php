@@ -150,13 +150,14 @@ class NldController extends Controller
         $validated = $request->validate([
             'summary' => 'nullable|string',
             'description' => 'nullable|string',
-            'control_status' => 'nullable|string',
-            'groups' => 'nullable|array',
-            'groups.*' => 'exists:groups,id',
+            'parent_issue_status' => 'nullable|string',
+            'group_ids' => 'nullable|array',
+            'group_ids.*' => 'exists:groups,id',
         ]);
 
+        $newGroupIds = $validated['group_ids'] ?? [];
+
         $oldGroupIds = $nld->groups()->pluck('groups.id')->toArray();
-        $newGroupIds = $validated['groups'] ?? [];
 
         $nld->groups()->sync($newGroupIds);
 
@@ -164,14 +165,15 @@ class NldController extends Controller
             $nld->control_status = 'In Progress';
         }
 
-        $nld->update([
-            'summary' => $validated['summary'] ?? $nld->summary,
-            'description' => $validated['description'] ?? $nld->description,
-            'control_status' => $nld->control_status, // уже обновлена при необходимости
-        ]);
+        $nld->summary = $validated['summary'] ?? $nld->summary;
+        $nld->description = $validated['description'] ?? $nld->description;
+        $nld->parent_issue_status = $validated['parent_issue_status'] ?? $nld->parent_issue_status;
+
+        $nld->save();
 
         return redirect()->route('nld.show', $nld)->with('success', 'NLD updated successfully.');
     }
+
 
     public function destroy(Nld $nld)
     {
@@ -191,7 +193,21 @@ class NldController extends Controller
             );
         }
 
-        return back()->with('success', 'Marked as finished for your group.');
+        $assignedGroupIds = $nld->groups->pluck('id')->sort()->values();
+
+        $doneGroupIds = $nld->doneStatuses
+            ->whereNotNull('done_at')
+            ->pluck('group_id')
+            ->sort()
+            ->values();
+
+        if ($assignedGroupIds->isNotEmpty() && $assignedGroupIds->toArray() === $doneGroupIds->toArray()) {
+            $nld->update([
+                'control_status' => 'Done',
+            ]);
+        }
+
+        return back()->with('success', 'Your group marked this task as finished.');
     }
 
     /**
@@ -239,6 +255,10 @@ class NldController extends Controller
         if (!empty($intersectingGroupIds)) {
             $nld->groups()->detach($intersectingGroupIds);
 
+            if ($nld->groups()->count() === 0) {
+                $nld->update(['control_status' => 'To Do']);
+            }
+
             return redirect()->route('nld.index')
                 ->with('success', 'You have been unassigned from this NLD.');
         }
@@ -246,6 +266,7 @@ class NldController extends Controller
         return redirect()->route('nld.index')
             ->with('error', 'You are not assigned to this NLD.');
     }
+
 
     public function reopen(Request $request, Nld $nld)
     {
@@ -257,9 +278,13 @@ class NldController extends Controller
             ->where('group_id', $request->group_id)
             ->delete();
 
+        $nld->control_status = 'In Progress';
+        $nld->save();
+
         return redirect()->route('nld.index')
             ->with('success', 'NLD has been marked as in progress again for the selected group.');
     }
+
 
 
     public function export(Request $request)
