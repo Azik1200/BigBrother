@@ -78,6 +78,13 @@
             </div>
         </form>
 
+        <div class="alert alert-info d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>
+                {{ $nlds->total() }} {{ Str::plural('record', $nlds->total()) }} found matching your filters.
+            </div>
+        </div>
+
         <!-- NLD List -->
         <div class="list-group">
             @forelse($nlds as $nld)
