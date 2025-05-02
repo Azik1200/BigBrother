@@ -15,8 +15,7 @@ class NldController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('per_page', 10);
-
+        $perPage = (int) $request->get('per_page', 10);
         $user = auth()->user();
         $isAdmin = $user->isAdmin();
 
@@ -35,39 +34,12 @@ class NldController extends Controller
                     $query->where('groups.id', $request->group_id));
                 }
             })
-            ->when($request->filled('done'), function ($q) use ($request, $isAdmin, $user) {
-                if ($request->done == '1') {
-                    // Задачи, у которых ВСЕ группы завершили задачу
-                    $q->whereHas('groups', function ($subQ) {
-                        $subQ->whereDoesntHave('nlds', function ($q2) {
-                            $q2->whereColumn('nld_id', 'nlds.id')
-                                ->whereNotIn('group_id', function ($subSub) {
-                                    $subSub->select('group_id')
-                                        ->from('nld_done_statuses')
-                                        ->whereColumn('nld_id', 'nlds.id');
-                                });
-                        });
-                    });
-                } elseif ($request->done == '0') {
-                    // Задачи, где хоть одна группа ещё не сделала done
-                    $q->whereHas('groups', function ($subQ) {
-                        $subQ->whereHas('nlds', function ($q2) {
-                            $q2->whereColumn('nld_id', 'nlds.id')
-                                ->whereNotIn('group_id', function ($subSub) {
-                                    $subSub->select('group_id')
-                                        ->from('nld_done_statuses')
-                                        ->whereColumn('nld_id', 'nlds.id');
-                                });
-                        });
-                    });
-                }
-            })
             ->when($request->filled('parent_issue_status'), fn($q) =>
             $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"));
 
+        // Ограничения для обычных пользователей
         if (!$isAdmin) {
             $userGroupIds = $user->groups->pluck('id');
-
             $nldsQuery->whereHas('groups', fn($q) =>
             $q->whereIn('groups.id', $userGroupIds))
                 ->whereDoesntHave('doneStatuses', function ($query) use ($userGroupIds) {
@@ -75,23 +47,46 @@ class NldController extends Controller
                 });
         }
 
-        $nlds = $nldsQuery->orderByDesc('add_date')
-            ->paginate($perPage)
-            ->appends($request->query());
+        $nlds = $nldsQuery->orderByDesc('add_date')->get();
+
+        // Ручная фильтрация по done
+        if ($request->filled('done')) {
+            $nlds = $nlds->filter(function ($nld) use ($request) {
+                $groupIds = $nld->groups->pluck('id')->map(fn($id) => (int)$id)->sort()->values();
+                $doneIds = $nld->doneStatuses->pluck('group_id')->map(fn($id) => (int)$id)->sort()->values();
+
+                $isFullyDone = $groupIds->count() > 0 &&
+                    $groupIds->diff($doneIds)->isEmpty() &&
+                    $doneIds->diff($groupIds)->isEmpty();
+
+                return $request->done == '1' ? $isFullyDone : !$isFullyDone;
+            });
+        }
+
+        $page = $request->get('page', 1);
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $nlds->forPage($page, $perPage),
+            $nlds->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         $groups = Group::where('name', '!=', 'admin')->get();
-
-        $parentStatuses = Nld::select('parent_issue_status')
-            ->whereNotNull('parent_issue_status')
+        $parentStatuses = Nld::whereNotNull('parent_issue_status')
+            ->where('parent_issue_status', '!=', '')
             ->distinct()
             ->pluck('parent_issue_status');
-
-        $issueTypes = Nld::select('issue_type')
-            ->whereNotNull('issue_type')
+        $issueTypes = Nld::whereNotNull('issue_type')
             ->distinct()
             ->pluck('issue_type');
 
-        return view('nld.index', compact('nlds', 'groups', 'parentStatuses', 'issueTypes'));
+        return view('nld.index', [
+            'nlds' => $paginated,
+            'groups' => $groups,
+            'parentStatuses' => $parentStatuses,
+            'issueTypes' => $issueTypes,
+        ]);
     }
 
     public function create()
