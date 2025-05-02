@@ -148,24 +148,29 @@ class NldController extends Controller
     public function update(Request $request, Nld $nld)
     {
         $validated = $request->validate([
-            'group_ids' => ['nullable', 'array'],
-            'group_ids.*' => ['integer', 'exists:groups,id'],
-            'parent_issue_status' => ['nullable', 'string', 'max:255'],
+            'summary' => 'nullable|string',
+            'description' => 'nullable|string',
+            'control_status' => 'nullable|string',
+            'groups' => 'nullable|array',
+            'groups.*' => 'exists:groups,id',
         ]);
 
-        if (!empty($validated['parent_issue_status'])) {
-            $nld->parent_issue_status = $validated['parent_issue_status'];
+        $oldGroupIds = $nld->groups()->pluck('groups.id')->toArray();
+        $newGroupIds = $validated['groups'] ?? [];
+
+        $nld->groups()->sync($newGroupIds);
+
+        if (empty($oldGroupIds) && !empty($newGroupIds)) {
+            $nld->control_status = 'In Progress';
         }
 
-        $nld->save();
+        $nld->update([
+            'summary' => $validated['summary'] ?? $nld->summary,
+            'description' => $validated['description'] ?? $nld->description,
+            'control_status' => $nld->control_status, // уже обновлена при необходимости
+        ]);
 
-        if (isset($validated['group_ids'])) {
-            $nld->groups()->sync($validated['group_ids']);
-            $nld->send_date = now()->format('Y-m-d');
-            $nld->save();
-        }
-
-        return redirect()->route('nld.index')->with('success', 'NLD record successfully updated.');
+        return redirect()->route('nld.show', $nld)->with('success', 'NLD updated successfully.');
     }
 
     public function destroy(Nld $nld)
