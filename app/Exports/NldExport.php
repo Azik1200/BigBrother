@@ -26,9 +26,11 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
             ->when($this->request->filled('issue_type'), fn($q) => $q->where('issue_type', $this->request->issue_type))
             ->when($this->request->filled('group_id'), function ($q) {
                 if ($this->request->group_id === 'null') {
-                    $q->whereNull('group_id');
+                    $q->whereDoesntHave('groups');
                 } else {
-                    $q->where('group_id', $this->request->group_id);
+                    $q->whereHas('groups', function ($subQuery) {
+                        $subQuery->where('groups.id', $this->request->group_id);
+                    });
                 }
             })
             ->when($this->request->filled('done'), function ($q) {
