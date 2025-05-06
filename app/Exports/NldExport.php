@@ -20,7 +20,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
 
     public function collection()
     {
-        return Nld::with('group')
+        return Nld::with(['groups', 'doneStatuses'])
             ->when($this->request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
             ->when($this->request->filled('reporter_name'), fn($q) => $q->where('reporter_name', 'like', "%{$this->request->reporter_name}%"))
             ->when($this->request->filled('issue_type'), fn($q) => $q->where('issue_type', $this->request->issue_type))
@@ -28,19 +28,37 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
                 if ($this->request->group_id === 'null') {
                     $q->whereDoesntHave('groups');
                 } else {
-                    $q->whereHas('groups', function ($subQuery) {
-                        $subQuery->where('groups.id', $this->request->group_id);
-                    });
+                    $q->whereHas('groups', fn($query) =>
+                    $query->where('groups.id', $this->request->group_id));
                 }
             })
             ->when($this->request->filled('done'), function ($q) {
                 if ($this->request->done === '1') {
-                    $q->whereNotNull('done_date');
+                    $q->whereHas('groups', function ($subQ) {
+                        $subQ->whereDoesntHave('nlds', function ($q2) {
+                            $q2->whereColumn('nld_id', 'nlds.id')
+                                ->whereNotIn('group_id', function ($subSub) {
+                                    $subSub->select('group_id')
+                                        ->from('nld_done_statuses')
+                                        ->whereColumn('nld_id', 'nlds.id');
+                                });
+                        });
+                    });
                 } elseif ($this->request->done === '0') {
-                    $q->whereNull('done_date');
+                    $q->whereHas('groups', function ($subQ) {
+                        $subQ->whereHas('nlds', function ($q2) {
+                            $q2->whereColumn('nld_id', 'nlds.id')
+                                ->whereNotIn('group_id', function ($subSub) {
+                                    $subSub->select('group_id')
+                                        ->from('nld_done_statuses')
+                                        ->whereColumn('nld_id', 'nlds.id');
+                                });
+                        });
+                    });
                 }
             })
-            ->when($this->request->filled('parent_issue_status'), fn($q) => $q->where('parent_issue_status', $this->request->parent_issue_status))
+            ->when($this->request->filled('parent_issue_status'), fn($q) =>
+            $q->where('parent_issue_status', $this->request->parent_issue_status))
             ->get();
     }
 
@@ -53,7 +71,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
             $nld->description,
             $nld->reporter_name,
             $nld->issue_type,
-            $nld->group->name ?? 'No group',
+            $nld->groups->pluck('name')->join(', ') ?? 'No group', // <-- исправлено
             $nld->control_status,
             $nld->parent_issue_key,
             $nld->parent_issue_status,
