@@ -20,10 +20,13 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
 
     public function collection()
     {
-        return Nld::with(['groups', 'doneStatuses'])
-            ->when($this->request->filled('issue_key'), fn($q) => $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
-            ->when($this->request->filled('reporter_name'), fn($q) => $q->where('reporter_name', 'like', "%{$this->request->reporter_name}%"))
-            ->when($this->request->filled('issue_type'), fn($q) => $q->where('issue_type', $this->request->issue_type))
+        $all = Nld::with(['groups', 'doneStatuses'])
+            ->when($this->request->filled('issue_key'), fn($q) =>
+            $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
+            ->when($this->request->filled('reporter_name'), fn($q) =>
+            $q->where('reporter_name', 'like', "%{$this->request->reporter_name}%"))
+            ->when($this->request->filled('issue_type'), fn($q) =>
+            $q->where('issue_type', $this->request->issue_type))
             ->when($this->request->filled('group_id'), function ($q) {
                 if ($this->request->group_id === 'null') {
                     $q->whereDoesntHave('groups');
@@ -32,34 +35,22 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
                     $query->where('groups.id', $this->request->group_id));
                 }
             })
-            ->when($this->request->filled('done'), function ($q) {
-                if ($this->request->done === '1') {
-                    $q->whereHas('groups', function ($subQ) {
-                        $subQ->whereDoesntHave('nlds', function ($q2) {
-                            $q2->whereColumn('nld_id', 'nlds.id')
-                                ->whereNotIn('group_id', function ($subSub) {
-                                    $subSub->select('group_id')
-                                        ->from('nld_group_statuses')
-                                        ->whereColumn('nld_id', 'nlds.id');
-                                });
-                        });
-                    });
-                } elseif ($this->request->done === '0') {
-                    $q->whereHas('groups', function ($subQ) {
-                        $subQ->whereHas('nlds', function ($q2) {
-                            $q2->whereColumn('nld_id', 'nlds.id')
-                                ->whereNotIn('group_id', function ($subSub) {
-                                    $subSub->select('group_id')
-                                        ->from('nld_group_statuses')
-                                        ->whereColumn('nld_id', 'nlds.id');
-                                });
-                        });
-                    });
-                }
-            })
             ->when($this->request->filled('parent_issue_status'), fn($q) =>
             $q->where('parent_issue_status', $this->request->parent_issue_status))
             ->get();
+
+        if ($this->request->filled('done')) {
+            $all = $all->filter(function ($nld) {
+                $groupIds = $nld->groups->pluck('id')->sort()->values();
+                $doneGroupIds = $nld->doneStatuses->pluck('group_id')->sort()->values();
+
+                $isDone = $groupIds->count() > 0 && $groupIds->diff($doneGroupIds)->isEmpty() && $doneGroupIds->diff($groupIds)->isEmpty();
+
+                return $this->request->done === '1' ? $isDone : !$isDone;
+            });
+        }
+
+        return $all->values();
     }
 
     public function map($nld): array
