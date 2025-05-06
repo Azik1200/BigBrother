@@ -39,7 +39,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
                             $q2->whereColumn('nld_id', 'nlds.id')
                                 ->whereNotIn('group_id', function ($subSub) {
                                     $subSub->select('group_id')
-                                        ->from('nld_done_statuses')
+                                        ->from('nld_group_statuses')
                                         ->whereColumn('nld_id', 'nlds.id');
                                 });
                         });
@@ -50,7 +50,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
                             $q2->whereColumn('nld_id', 'nlds.id')
                                 ->whereNotIn('group_id', function ($subSub) {
                                     $subSub->select('group_id')
-                                        ->from('nld_done_statuses')
+                                        ->from('nld_group_statuses')
                                         ->whereColumn('nld_id', 'nlds.id');
                                 });
                         });
