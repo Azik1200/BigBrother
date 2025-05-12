@@ -206,15 +206,23 @@
                                 <h5 class="modal-title" id="reopenModalLabel">Reopen Task for Group</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
+                            @if($errors->any())
+                                <div class="alert alert-danger mt-3">
+                                    {{ $errors->first() }}
+                                </div>
+                            @endif
                             <div class="modal-body">
                                 <label for="group_id" class="form-label">Select Group to Reopen</label>
-                                <select name="group_id" id="group_id" class="form-select" required>
+                                <select name="group_id" id="group_id" class="form-select mb-3" required>
                                     @foreach($nld->doneStatuses as $status)
                                         <option value="{{ $status->group_id }}">
                                             {{ $status->group->name }}
                                         </option>
                                     @endforeach
                                 </select>
+
+                                <label for="comment" class="form-label">Comment (required)</label>
+                                <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Provide a reason for reopening..." required></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-danger">Reopen Task</button>

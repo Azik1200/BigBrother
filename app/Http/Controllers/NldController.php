@@ -270,13 +270,19 @@ class NldController extends Controller
 
     public function reopen(Request $request, Nld $nld)
     {
-        $request->validate([
+        $validated = $request->validate([
             'group_id' => ['required', 'exists:groups,id'],
+            'comment' => ['required', 'string', 'min:3', 'max:1000'],
         ]);
 
         $nld->doneStatuses()
-            ->where('group_id', $request->group_id)
+            ->where('group_id', $validated['group_id'])
             ->delete();
+
+        $nld->comments()->create([
+            'user_id' => auth()->id(),
+            'comment' => $validated['comment'],
+        ]);
 
         $nld->control_status = 'In Progress';
         $nld->save();
@@ -284,6 +290,7 @@ class NldController extends Controller
         return redirect()->route('nld.index')
             ->with('success', 'NLD has been marked as in progress again for the selected group.');
     }
+
 
 
 
