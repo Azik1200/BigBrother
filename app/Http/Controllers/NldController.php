@@ -37,31 +37,20 @@ class NldController extends Controller
             ->when($request->filled('parent_issue_status'), fn($q) =>
             $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"));
 
-        // Ограничения для обычных пользователей
         if (!$isAdmin) {
             $userGroupIds = $user->groups->pluck('id');
+
             $nldsQuery->whereHas('groups', fn($q) =>
-            $q->whereIn('groups.id', $userGroupIds))
-                ->whereDoesntHave('doneStatuses', function ($query) use ($userGroupIds) {
-                    $query->whereIn('group_id', $userGroupIds);
-                });
+            $q->whereIn('groups.id', $userGroupIds));
+        }
+
+        if ($request->filled('done')) {
+            $isDoneFilter = $request->get('done') == '1';
+
+            $nldsQuery->where('control_status', $isDoneFilter ? 'Done' : 'In Progress');
         }
 
         $nlds = $nldsQuery->orderByDesc('add_date')->get();
-
-        // Ручная фильтрация по done
-        if ($request->filled('done')) {
-            $nlds = $nlds->filter(function ($nld) use ($request) {
-                $groupIds = $nld->groups->pluck('id')->map(fn($id) => (int)$id)->sort()->values();
-                $doneIds = $nld->doneStatuses->pluck('group_id')->map(fn($id) => (int)$id)->sort()->values();
-
-                $isFullyDone = $groupIds->count() > 0 &&
-                    $groupIds->diff($doneIds)->isEmpty() &&
-                    $doneIds->diff($groupIds)->isEmpty();
-
-                return $request->done == '1' ? $isFullyDone : !$isFullyDone;
-            });
-        }
 
         $page = $request->get('page', 1);
         $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
