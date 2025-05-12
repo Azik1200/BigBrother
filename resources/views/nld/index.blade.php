@@ -93,32 +93,36 @@
                     $groupIds = $nldGroups->pluck('id')->map(fn($id) => (int)$id)->sort()->values();
                     $doneGroupIds = $nld->doneStatuses->pluck('group_id')->map(fn($id) => (int)$id)->sort()->values();
 
-                    $isFullyDone = $groupIds->count() > 0 && $groupIds->diff($doneGroupIds)->isEmpty() && $doneGroupIds->diff($groupIds)->isEmpty();
+                    $isFullyDone = $nld->parent_issue_status === 'done' && $groupIds->count() > 0 && $groupIds->diff($doneGroupIds)->isEmpty() && $doneGroupIds->diff($groupIds)->isEmpty();
 
                     $bgClass = '';
 
-                    if ($isFullyDone) {
-                        $bgClass = 'bg-success bg-opacity-25';
-                    } elseif ($nld->send_date) {
-                        $daysSinceSend = \Carbon\Carbon::parse($nld->send_date)->diffInDays(now());
+                    if ($nld->parent_issue_status === 'done') {
+                        if ($isFullyDone) {
+                            $bgClass = 'bg-success bg-opacity-25';
+                        } elseif ($nld->send_date) {
+                            $daysSinceSend = \Carbon\Carbon::parse($nld->send_date)->diffInDays(now());
 
                         if ($daysSinceSend >= 7) {
-                            $bgClass = 'bg-danger bg-opacity-25';
+                           $bgClass = 'bg-danger bg-opacity-25';
                         } elseif ($daysSinceSend >= 3) {
                             $bgClass = 'bg-warning bg-opacity-25';
                         } else {
                             $bgClass = 'bg-light';
                         }
-                    } elseif ($nld->add_date) {
-                        $daysSinceAdd = \Carbon\Carbon::parse($nld->add_date)->diffInDays(now());
+                        } elseif ($nld->add_date) {
+                            $daysSinceAdd = \Carbon\Carbon::parse($nld->add_date)->diffInDays(now());
 
-                        if ($daysSinceAdd >= 7) {
-                            $bgClass = 'bg-primary bg-opacity-25';
-                        } elseif ($daysSinceAdd >= 3) {
-                            $bgClass = 'bg-info bg-opacity-25';
-                        } else {
-                            $bgClass = 'bg-light';
+                            if ($daysSinceAdd >= 7) {
+                                $bgClass = 'bg-primary bg-opacity-25';
+                            } elseif ($daysSinceAdd >= 3) {
+                                $bgClass = 'bg-info bg-opacity-25';
+                            } else {
+                                $bgClass = 'bg-light';
+                            }
                         }
+                    } else {
+                        $bgClass = 'bg-light';
                     }
                 @endphp
 
