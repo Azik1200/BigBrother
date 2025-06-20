@@ -56,4 +56,5 @@ class NewCommentNotification extends Mailable
     {
         return [];
     }
+
 }
