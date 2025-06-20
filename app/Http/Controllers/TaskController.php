@@ -63,7 +63,7 @@ class TaskController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $task->users()->attach($allowedUsers);
+            $task->assignees()->attach($allowedUsers);
         }
 
         $groupLeader = User::where('group_leader', true)->first();

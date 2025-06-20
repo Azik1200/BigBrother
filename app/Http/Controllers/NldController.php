@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Models\Nld;
 use App\Models\NldGroupStatus;
-use Carbon\Carbon;
+use App\Services\NldImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -83,38 +83,19 @@ class NldController extends Controller
         return view('nld.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, NldImportService $importService)
     {
         $validated = $request->validate([
             'nld_file' => ['required', 'file', 'mimes:xlsx,xls', 'max:2048'],
         ]);
 
         try {
-            $excelData = Excel::toArray(new class() implements \Maatwebsite\Excel\Concerns\ToArray {
-                public function array(array $rows) { return $rows; }
-            }, $validated['nld_file']);
+            $importService->importFromFile($validated['nld_file']);
 
-            $rows = $excelData[0] ?? [];
-
-            if (count($rows) <= 1) {
-                return back()->with('error', 'Excel файл не содержит данных.');
-            }
-
-            foreach (array_slice($rows, 1) as $row) {
-                $nldData = $this->mapRowToNldData($row);
-
-                try {
-                    Nld::create($nldData);
-                } catch (\Exception $e) {
-                    Log::error('Ошибка сохранения NLD: ' . $e->getMessage(), $nldData);
-                    return back()->with('error', 'Ошибка при сохранении данных.');
-                }
-            }
-
-            return redirect()->route('nld')->with('success', 'Данные из Excel успешно импортированы.');
+            return redirect()->route('nld.index')->with('success', 'Данные из Excel успешно импортированы.');
         } catch (\Exception $e) {
             Log::error('Ошибка обработки Excel: ' . $e->getMessage());
-            return back()->with('error', 'Ошибка при обработке Excel файла.');
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -199,37 +180,6 @@ class NldController extends Controller
         return back()->with('success', 'Your group marked this task as finished.');
     }
 
-    /**
-     * Helper: Карта строки Excel в данные для создания NLD.
-     */
-    private function mapRowToNldData(array $row): array
-    {
-        $baseDate = Carbon::createFromDate(1900, 1, 1);
-
-        $createdDate = is_numeric($row[6] ?? null)
-            ? $baseDate->copy()->addDays($row[6] - 2)->format('Y-m-d')
-            : now()->format('Y-m-d');
-
-        $updatedDate = is_numeric($row[5] ?? null)
-            ? $baseDate->copy()->addDays($row[5] - 2)->format('Y-m-d')
-            : now()->format('Y-m-d');
-
-        return [
-            'issue_key' => $row[0] ?? null,
-            'summary' => isset($row[1]) ? str_replace('_x000D_', "\n", $row[1]) : '',
-            'description' => isset($row[2]) ? str_replace('_x000D_', "\n", $row[2]) : '-',
-            'reporter_name' => $row[3] ?? '',
-            'issue_type' => $row[4] ?? '',
-            'updated' => $updatedDate,
-            'created' => $createdDate,
-            'parent_issue_key' => $row[7] ?? '',
-            'parent_issue_status' => isset($row[8]) ? str_replace('_x000D_', "\n", $row[8]) : '',
-            'parent_issue_number' => $row[9] ?? '',
-            'control_status' => 'To Do',
-            'add_date' => now()->format('Y-m-d'),
-            'send_date' => null,
-        ];
-    }
 
     public function unassign(Nld $nld)
     {
