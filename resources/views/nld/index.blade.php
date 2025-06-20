@@ -25,34 +25,86 @@
                     <input type="text" name="reporter_name" value="{{ request('reporter_name') }}" class="form-control" placeholder="Reporter Name">
                 </div>
                 <div class="col-md-2">
-                    <select name="issue_type" class="form-select">
-                        <option value="">All Types</option>
-                        @foreach($issueTypes as $type)
-                            <option value="{{ $type }}" @selected(request('issue_type') == $type)>{{ $type }}</option>
-                        @endforeach
-                    </select>
-
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ request('issue_type', 'All Types') ?: 'All Types' }}
+                        </button>
+                        <div class="dropdown-menu p-2 w-100">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="issue_type" value="" id="issueTypeAll" @checked(!request('issue_type'))>
+                                <label class="form-check-label" for="issueTypeAll">All Types</label>
+                            </div>
+                            @foreach($issueTypes as $type)
+                                @php $slug = Str::slug($type); @endphp
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="issue_type" value="{{ $type }}" id="issueType-{{ $slug }}" @checked(request('issue_type') == $type)>
+                                    <label class="form-check-label" for="issueType-{{ $slug }}">{{ $type }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 @if(auth()->user()->isAdmin())
                     <div class="col-md-2">
-                        <select name="group_id" class="form-select">
-                            <option value="">All Groups</option>
-                            <option value="null" @selected(request('group_id') === 'null')>No Group</option>
-                            @foreach ($groups->where('name', '!=', 'admin') as $group)
-                                <option value="{{ $group->id }}" @selected(request('group_id') == $group->id)>
-                                    {{ $group->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="dropdown w-100">
+                            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @php
+                                    $selectedGroup = '';
+                                    if(request('group_id') === 'null') {
+                                        $selectedGroup = 'No Group';
+                                    } elseif(request('group_id')) {
+                                        $selectedGroup = $groups->firstWhere('id', request('group_id'))->name ?? '';
+                                    }
+                                @endphp
+                                {{ $selectedGroup ?: 'All Groups' }}
+                            </button>
+                            <div class="dropdown-menu p-2 w-100">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="group_id" value="" id="groupAll" @checked(!request('group_id'))>
+                                    <label class="form-check-label" for="groupAll">All Groups</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="group_id" value="null" id="groupNull" @checked(request('group_id') === 'null')>
+                                    <label class="form-check-label" for="groupNull">No Group</label>
+                                </div>
+                                @foreach ($groups->where('name', '!=', 'admin') as $group)
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="group_id" value="{{ $group->id }}" id="group_{{ $group->id }}" @checked(request('group_id') == $group->id)>
+                                        <label class="form-check-label" for="group_{{ $group->id }}">{{ $group->name }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 @endif
 
                 <div class="col-md-2">
-                    <select name="done" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="1" @selected(request('done') == '1')>Finished</option>
-                        <option value="0" @selected(request('done') == '0')>In Progress</option>
-                    </select>
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @php
+                                $doneLabel = match(request('done')) {
+                                    '1' => 'Finished',
+                                    '0' => 'In Progress',
+                                    default => 'All Statuses'
+                                };
+                            @endphp
+                            {{ $doneLabel }}
+                        </button>
+                        <div class="dropdown-menu p-2 w-100">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="done" value="" id="doneAll" @checked(!request('done'))>
+                                <label class="form-check-label" for="doneAll">All Statuses</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="done" value="1" id="doneFinished" @checked(request('done') == '1')>
+                                <label class="form-check-label" for="doneFinished">Finished</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="done" value="0" id="doneProgress" @checked(request('done') == '0')>
+                                <label class="form-check-label" for="doneProgress">In Progress</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <div class="dropdown w-100">
@@ -70,11 +122,19 @@
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <select name="per_page" class="form-select">
-                        <option value="10" @selected(request('per_page') == 10)>10 per page</option>
-                        <option value="25" @selected(request('per_page') == 25)>25 per page</option>
-                        <option value="50" @selected(request('per_page') == 50)>50 per page</option>
-                    </select>
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ request('per_page', 10) }} per page
+                        </button>
+                        <div class="dropdown-menu p-2 w-100">
+                            @foreach([10,25,50] as $size)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="per_page" value="{{ $size }}" id="perPage{{ $size }}" @checked(request('per_page', 10) == $size)>
+                                    <label class="form-check-label" for="perPage{{ $size }}">{{ $size }} per page</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-12 d-flex justify-content-end gap-2">
                     <button type="submit" class="btn btn-primary">Filter</button>
