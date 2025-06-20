@@ -52,13 +52,14 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select id="parentStatusSelect" name="parent_issue_status[]" class="form-select" multiple data-placeholder="Parent Statuses">
+                    <select name="parent_issue_status[]" class="form-select" multiple size="5">
                         @foreach($parentStatuses as $status)
                             <option value="{{ $status }}" @selected(collect(request('parent_issue_status'))->contains($status))>
                                 {{ $status }}
                             </option>
                         @endforeach
                     </select>
+                    <small class="form-text text-muted mt-1">Hold <kbd>Ctrl</kbd> (or <kbd>Cmd</kbd> on Mac) to select multiple.</small>
                 </div>
                 <div class="col-md-2">
                     <select name="per_page" class="form-select">
