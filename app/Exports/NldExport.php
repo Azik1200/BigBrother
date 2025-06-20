@@ -22,22 +22,27 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
     public function collection()
     {
         $query = Nld::with(['groups', 'doneStatuses'])
-            ->when($this->request->filled('issue_key'), fn($q) =>
-            $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
-            ->when($this->request->filled('reporter_name'), fn($q) =>
-            $q->where('reporter_name', 'like', "%{$this->request->reporter_name}%"))
-            ->when($this->request->filled('issue_type'), fn($q) =>
-            $q->where('issue_type', $this->request->issue_type))
+            ->when($this->request->filled('issue_key'), fn ($q) =>
+                $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
+            ->when($this->request->filled('reporter_name'), fn ($q) =>
+                $q->where('reporter_name', 'like', "%{$this->request->reporter_name}%"))
+            ->when($this->request->filled('issue_type'), fn ($q) =>
+                $q->where('issue_type', $this->request->issue_type))
             ->when($this->request->filled('group_id'), function ($q) {
                 if ($this->request->group_id === 'null') {
                     $q->whereDoesntHave('groups');
                 } else {
-                    $q->whereHas('groups', fn($query) =>
-                    $query->where('groups.id', $this->request->group_id));
+                    $q->whereHas('groups', fn ($query) =>
+                        $query->where('groups.id', $this->request->group_id));
                 }
             })
-            ->when($this->request->filled('parent_issue_status'), fn($q) =>
-            $q->where('parent_issue_status', $this->request->parent_issue_status));
+            ->when($this->request->filled('parent_issue_status'), function ($q) {
+                $statuses = $this->request->input('parent_issue_status');
+                $statuses = is_array($statuses) ? array_filter($statuses) : [$statuses];
+                if (!empty($statuses)) {
+                    $q->whereIn('parent_issue_status', $statuses);
+                }
+            });
 
         $user = Auth::user();
         if ($user && !$user->isAdmin()) {
@@ -46,14 +51,6 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
         }
 
         $all = $query->get();
-            ->when($this->request->filled('parent_issue_status'), function ($q) {
-                $statuses = $this->request->input('parent_issue_status');
-                $statuses = is_array($statuses) ? array_filter($statuses) : [$statuses];
-                if (!empty($statuses)) {
-                    $q->whereIn('parent_issue_status', $statuses);
-                }
-            })
-            ->get();
 
         if ($this->request->filled('done')) {
             $all = $all->filter(function ($nld) {
