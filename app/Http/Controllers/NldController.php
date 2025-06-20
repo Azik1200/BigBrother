@@ -34,8 +34,13 @@ class NldController extends Controller
                     $query->where('groups.id', $request->group_id));
                 }
             })
-            ->when($request->filled('parent_issue_status'), fn($q) =>
-            $q->where('parent_issue_status', 'like', "%{$request->parent_issue_status}%"));
+            ->when($request->filled('parent_issue_status'), function ($q) use ($request) {
+                $statuses = $request->input('parent_issue_status');
+                $statuses = is_array($statuses) ? array_filter($statuses) : [$statuses];
+                if (!empty($statuses)) {
+                    $q->whereIn('parent_issue_status', $statuses);
+                }
+            });
 
         if (!$isAdmin) {
             $userGroupIds = $user->groups->pluck('id');
