@@ -103,20 +103,18 @@
                         } elseif ($nld->send_date) {
                             $daysSinceSend = \Carbon\Carbon::parse($nld->send_date)->diffInDays(now());
 
-                        if ($daysSinceSend >= 7) {
-                           $bgClass = 'bg-danger bg-opacity-25';
-                        } elseif ($daysSinceSend >= 3) {
-                            $bgClass = 'bg-warning bg-opacity-25';
-                        } else {
-                            $bgClass = 'bg-light';
-                        }
+                            if ($daysSinceSend >= 7) {
+                                $bgClass = 'bg-danger bg-opacity-25';
+                            } elseif ($daysSinceSend >= 3) {
+                                $bgClass = 'bg-pink bg-opacity-25';
+                            } else {
+                                $bgClass = 'bg-light';
+                            }
                         } elseif ($nld->add_date) {
                             $daysSinceAdd = \Carbon\Carbon::parse($nld->add_date)->diffInDays(now());
 
-                            if ($daysSinceAdd >= 7) {
-                                $bgClass = 'bg-primary bg-opacity-25';
-                            } elseif ($daysSinceAdd >= 3) {
-                                $bgClass = 'bg-info bg-opacity-25';
+                            if ($daysSinceAdd >= 3 && is_null($nld->send_date)) {
+                                $bgClass = 'bg-danger bg-opacity-25';
                             } else {
                                 $bgClass = 'bg-light';
                             }
