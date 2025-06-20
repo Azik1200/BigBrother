@@ -71,7 +71,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
             $nld->created,
             $nld->add_date,
             $nld->send_date,
-            $nld->done_date,
+            $nld->done_date ?? optional($nld->doneStatuses->min('done_at'))->format('Y-m-d H:i:s'),
         ];
     }
 
