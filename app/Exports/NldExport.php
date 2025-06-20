@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Illuminate\Support\Facades\Auth;
 
 class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
@@ -20,7 +21,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
 
     public function collection()
     {
-        $all = Nld::with(['groups', 'doneStatuses'])
+        $query = Nld::with(['groups', 'doneStatuses'])
             ->when($this->request->filled('issue_key'), fn($q) =>
             $q->where('issue_key', 'like', "%{$this->request->issue_key}%"))
             ->when($this->request->filled('reporter_name'), fn($q) =>
@@ -36,8 +37,15 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
                 }
             })
             ->when($this->request->filled('parent_issue_status'), fn($q) =>
-            $q->where('parent_issue_status', $this->request->parent_issue_status))
-            ->get();
+            $q->where('parent_issue_status', $this->request->parent_issue_status));
+
+        $user = Auth::user();
+        if ($user && !$user->isAdmin()) {
+            $userGroupIds = $user->groups->pluck('id');
+            $query->whereHas('groups', fn($q) => $q->whereIn('groups.id', $userGroupIds));
+        }
+
+        $all = $query->get();
 
         if ($this->request->filled('done')) {
             $all = $all->filter(function ($nld) {
