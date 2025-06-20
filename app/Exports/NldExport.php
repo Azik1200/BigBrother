@@ -79,8 +79,18 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
             $nld->created,
             $nld->add_date,
             $nld->send_date,
-            $nld->done_date ?? optional($nld->doneStatuses->min('done_at'))->format('Y-m-d H:i:s'),
+            $this->resolveDoneDate($nld),
         ];
+    }
+
+    private function resolveDoneDate($nld)
+    {
+        if ($nld->done_date) {
+            return $nld->done_date;
+        }
+
+        $doneAt = $nld->doneStatuses->min('done_at');
+        return $doneAt ? \Carbon\Carbon::parse($doneAt)->format('d.m.Y H:i') : null;
     }
 
     public function headings(): array
