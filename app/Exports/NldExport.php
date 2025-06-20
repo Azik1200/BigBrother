@@ -67,7 +67,7 @@ class NldExport implements FromCollection, WithHeadings, WithMapping, ShouldAuto
             $nld->description,
             $nld->reporter_name,
             $nld->issue_type,
-            $nld->groups->pluck('name')->join(', ') ?? 'No group', // <-- исправлено
+            $nld->groups->pluck('name')->join(', ') ?? 'No group',
             $nld->control_status,
             $nld->parent_issue_key,
             $nld->parent_issue_status,
