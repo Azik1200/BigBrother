@@ -52,7 +52,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select name="parent_issue_status[]" class="form-select" multiple size="5">
+                    <select id="parentStatusSelect" name="parent_issue_status[]" class="form-select" multiple data-placeholder="Parent Statuses">
                         @foreach($parentStatuses as $status)
                             <option value="{{ $status }}" @selected(collect(request('parent_issue_status'))->contains($status))>
                                 {{ $status }}
