@@ -1,4 +1,7 @@
-@php use Carbon\Carbon; @endphp
+@php
+    use Carbon\Carbon;
+    use Illuminate\Support\Str;
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -52,14 +55,19 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select name="parent_issue_status[]" class="form-select" multiple size="5">
-                        @foreach($parentStatuses as $status)
-                            <option value="{{ $status }}" @selected(collect(request('parent_issue_status'))->contains($status))>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small class="form-text text-muted mt-1">Hold <kbd>Ctrl</kbd> (or <kbd>Cmd</kbd> on Mac) to select multiple.</small>
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Parent Statuses
+                        </button>
+                        <div class="dropdown-menu p-2 w-100">
+                            @foreach($parentStatuses as $status)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parent_issue_status[]" value="{{ $status }}" id="status-{{ Str::slug($status) }}" @checked(collect(request('parent_issue_status'))->contains($status))>
+                                    <label class="form-check-label" for="status-{{ Str::slug($status) }}">{{ $status }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <select name="per_page" class="form-select">
