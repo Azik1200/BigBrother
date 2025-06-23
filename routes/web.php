@@ -4,6 +4,7 @@ use App\Http\Controllers\{AdminAnalyticsController,
     AdminController,
     AuthController,
     BackUpController,
+    CatalogController,
     CommentController,
     DashboardController,
     ExcelController,
@@ -75,6 +76,10 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('groups')->name('group.')->group(function () {
         Route::get('/list', [GroupController::class, 'myGroups'])->name('list');
+    });
+
+    Route::prefix('catalogs')->name('catalogs.')->group(function () {
+        Route::get('/{catalog}/categories', [CatalogController::class, 'categories'])->name('categories');
     });
 
     // Admin
